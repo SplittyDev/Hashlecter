@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{7880AE56-FFB3-4E30-94B4-E486028A5BAF}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>hashlecter</RootNamespace>
+    <AssemblyName>lecter</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Externalconsole>true</Externalconsole>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="codeaddicts.libArgument">
+      <HintPath>..\packages\Codeaddicts.libArgument.0.1.5604.7101\lib\net40\codeaddicts.libArgument.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite">
+      <HintPath>..\..\..\..\Downloads\sqlite-netFx40-binary-bundle-Win32-2010-1.0.97.0\System.Data.SQLite.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Options.cs" />
+    <Compile Include="Enumerations\Verbosity.cs" />
+    <Compile Include="HashingMethods\MD5.cs" />
+    <Compile Include="Hashes\MD5_Impl.cs" />
+    <Compile Include="Enumerations\AttackMethod.cs" />
+    <Compile Include="DatabaseBindings\SQLite.cs" />
+    <Compile Include="Extensions\HexExtensions.cs" />
+    <Compile Include="DatabaseBindings\Database.cs" />
+    <Compile Include="HashingMethods\HashingMethod.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="Hashes\packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Hashes\" />
+    <Folder Include="Enumerations\" />
+    <Folder Include="HashingMethods\" />
+    <Folder Include="DatabaseBindings\" />
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+</Project>
