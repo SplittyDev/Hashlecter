@@ -50,7 +50,7 @@ namespace hashlecter
 			using (var hasher = MD5x.Create ()) {
 				hash = hasher.ComputeHash (bytes);
 			}
-			return hash.ToHex ();
+			return hash.ToHex ().ToLowerInvariant ();
 		}
 	}
 }
