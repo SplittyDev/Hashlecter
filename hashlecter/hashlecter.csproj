@@ -46,7 +46,6 @@
     <Compile Include="Options.cs" />
     <Compile Include="Enumerations\Verbosity.cs" />
     <Compile Include="HashingMethods\MD5.cs" />
-    <Compile Include="Hashes\MD5_Impl.cs" />
     <Compile Include="Enumerations\AttackMethod.cs" />
     <Compile Include="DatabaseBindings\SQLite.cs" />
     <Compile Include="Extensions\HexExtensions.cs" />
@@ -55,10 +54,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <None Include="Hashes\packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Hashes\" />
     <Folder Include="Enumerations\" />
     <Folder Include="HashingMethods\" />
     <Folder Include="DatabaseBindings\" />

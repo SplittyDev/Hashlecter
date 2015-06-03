@@ -118,11 +118,11 @@ namespace hashlecter
 			else if (!string.IsNullOrEmpty (options.input_file))
 				input_hashes = FromFile (options.input_file);
 
-			Console.WriteLine ("Processing {0} hashes.", input_hashes.Count (s => !s.StartsWith ("#")));
-			Process (input_hashes, method, options.input_dict);
+			if (!string.IsNullOrEmpty (options.input_dict))
+				ProcessDictionary (input_hashes, method, options.input_dict);
 		}
 
-		static void Process (string[] hashes, HashingMethod method, string dict_filename) {
+		static void ProcessDictionary (string[] hashes, HashingMethod method, string dict_filename) {
 			
 			// Default dictionary buffer size
 			const int BUFFER_SZ = 102400; // 100 KiB
