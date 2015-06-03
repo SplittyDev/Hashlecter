@@ -21,7 +21,7 @@ namespace hashlecter
 		/// <summary>
 		/// The default SQLite database path.
 		/// </summary>
-		const string SQLITE_DB = "lecter.db";
+		public const string SQLITE_DB = "lecter.db";
 
 		#endregion
 
@@ -30,7 +30,7 @@ namespace hashlecter
 		/// <summary>
 		/// The parsed command-line arguments.
 		/// </summary>
-		static Options options;
+		public static Options options;
 
 		/// <summary>
 		/// A hashset containing the hashing methods.
@@ -40,17 +40,12 @@ namespace hashlecter
 		/// <summary>
 		/// The current session identifier.
 		/// </summary>
-		static string session;
+		public static string session;
 
 		/// <summary>
 		/// The current SQLite database.
 		/// </summary>
-		static SQLite db;
-
-		/// <summary>
-		/// A flag that indicates whether all tasks should stop or not.
-		/// </summary>
-		static volatile bool done;
+		public static SQLite db;
 
 		#endregion
 
@@ -118,147 +113,12 @@ namespace hashlecter
 			else if (!string.IsNullOrEmpty (options.input_file))
 				input_hashes = FromFile (options.input_file);
 
+			// Perform dictionary attack
 			if (!string.IsNullOrEmpty (options.input_dict))
-				ProcessDictionary (input_hashes, method, options.input_dict);
-		}
+				DictionaryAttack.Run (input_hashes, method, options.input_dict);
 
-		static void ProcessDictionary (string[] hashes, HashingMethod method, string dict_filename) {
-			
-			// Default dictionary buffer size
-			const int BUFFER_SZ = 102400; // 100 KiB
-
-			// Dictionary buffer
-			string[] dict = new string[BUFFER_SZ];
-
-			// Stopwatch for measuring time
-			var watch = Stopwatch.StartNew ();
-
-			// Update_Screen task
-			var update = Task.Factory.StartNew (() => Update_Screen (watch));
-
-			// Update_Stats task
-			var update_avg = Task.Factory.StartNew (Update_Stats);
-
-			// Open dictionary file for reading
-			using (var fdict = File.OpenRead (dict_filename))
-			using (var reader = new StreamReader (fdict)) {
-
-				// Iterate over all hashes in the array
-				for (var i = 0; i < hashes.Length; i++) {
-
-					// Skip comments
-					if (hashes[i].StartsWith ("#"))
-						continue;
-
-					// Check if there is still something in the dictionary to read
-					while (reader.BaseStream.Position < reader.BaseStream.Length) {
-
-						// Iterate over all values in [0..BUFFER_SZ]
-						for (var j = 0; j < BUFFER_SZ; j++) {
-
-							// Add the next line from the dictionary to the buffer
-							dict[j] = reader.ReadLine ();
-
-							// Increment the loaded variable if the line is valid
-							if (dict[j] != null) {
-								dict[j] = dict[j].Replace ("\r", "");
-								loaded++;
-							}
-						}
-
-						// Use parallel processing to iterate over all entries in the dictionary buffer
-						Parallel.ForEach<string> (dict, (dict_entry, loopstate_inner) => {
-
-							// Get the current hash
-							var hash = hashes[i];
-
-							// Create a variable for storing the output (if valid)
-							string output;
-
-							// Get the current dictionary entry
-							// (for the Update_Screen task)
-							dict_current = dict_entry;
-
-							// Try to collide the hashes
-							var success = method.CheckHash (hash, dict_entry, out output);
-
-							// Increment the statistically relevant variables
-							++processed;
-							++avg_tmp;
-
-							// Check if the collision succeeded
-							if (success) {
-
-								// Increment the amount of successfully collided hashes
-								// (for the Update_Screen task)
-								cracked++;
-
-								// Add the collision to the database
-								db.Add (session, hash, output);
-
-								// Break out of the loop
-								loopstate_inner.Stop ();
-							}
-						});
-					}
-
-					// Reset the dictionary position to 0
-					// for processing the next hash
-					reader.BaseStream.Position = 0;
-
-					// Reset the 
-					loaded = 0;
-				}
-
-				// We're done!
-				// Tell all tasks to stop
-				done = true;
-			}
-		}
-
-		static int avg, avg_tmp, max;
-		static int processed, loaded, cracked;
-		static string dict_current;
-		static void Update_Screen (Stopwatch watch) {
-			while (!done) {
-				Console.Clear ();
-
-				// Basic
-				Console.WriteLine ("[Basic]");
-				Console.WriteLine ("Speed  : {0} hash/s", avg);
-				Console.WriteLine ("Max    : {0} hash/s", max);
-				Console.WriteLine ("Total  : {0} hashes", processed);
-				Console.WriteLine ("Cracked: {0} cracked.", cracked);
-				Console.WriteLine ();
-
-				// Dictionary
-				if (!string.IsNullOrEmpty (options.input_dict)) {
-					Console.WriteLine ("[Dictionary]");
-					Console.WriteLine ("Loaded : {0}", loaded);
-					Console.WriteLine ("Current: {0}", dict_current);
-					Console.WriteLine ();
-				}
-
-				// Database
-				Console.WriteLine ("[Database]");
-				Console.WriteLine ("Source : {0}", SQLITE_DB);
-				Console.WriteLine ("Session: {0}", session);
-				Console.WriteLine ();
-
-				if (cracked > 0)
-					Console.WriteLine ("Use lecter -s {0} --show to see the results.", session);
-
-				Thread.Sleep (250);
-			}
-		}
-
-		static void Update_Stats () {
-			while (!done) {
-				Thread.Sleep (1000);
-				avg = (avg + avg_tmp) / 2;
-				max = Math.Max (max, avg_tmp);
-				avg_tmp = 0;
-			}
+			// Perform bruteforce attack
+			// TODO: Add bruteforce attack
 		}
 
 		/// <summary>

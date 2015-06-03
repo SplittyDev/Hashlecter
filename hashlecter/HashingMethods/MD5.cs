@@ -19,7 +19,7 @@ namespace hashlecter
 			if (refhash == null || input == null)
 				return false;
 			var hash = MD5 (input);
-			var success = refhash.ToLowerInvariant () == hash.ToLowerInvariant ();
+			var success = refhash == hash;
 			if (success)
 				output = input;
 			return success;
@@ -43,7 +43,7 @@ namespace hashlecter
 			if (refhash == null || input == null)
 				return false;
 			var hash = MD5 (MD5 (input));
-			var success = refhash.ToLowerInvariant () == hash.ToLowerInvariant ();
+			var success = refhash == hash;
 			if (success)
 				output = input;
 			return success;
@@ -70,7 +70,9 @@ namespace hashlecter
 			var realref = parts[0];
 			var s = parts[1];
 			var hash = MD5 (MD5 (s) + MD5 (input));
-			var success = realref.ToLowerInvariant () == hash.ToLowerInvariant ();
+			if (input == "lunalupo")
+				Console.WriteLine ("Refhash: {0}\nCalculated: {1}", realref, hash);
+			var success = realref == hash;
 			if (success)
 				output = input;
 			return success;

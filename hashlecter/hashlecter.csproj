@@ -51,6 +51,7 @@
     <Compile Include="Extensions\HexExtensions.cs" />
     <Compile Include="DatabaseBindings\Database.cs" />
     <Compile Include="HashingMethods\HashingMethod.cs" />
+    <Compile Include="Attacks\DictionaryAttack.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -58,5 +59,6 @@
     <Folder Include="HashingMethods\" />
     <Folder Include="DatabaseBindings\" />
     <Folder Include="Extensions\" />
+    <Folder Include="Attacks\" />
   </ItemGroup>
 </Project>
