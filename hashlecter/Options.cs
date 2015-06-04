@@ -5,6 +5,14 @@ namespace hashlecter
 {
 	public class Options
 	{
+		// d: dict
+		// i: input
+		// m: method
+		// s: session
+		// v: verbosity
+
+		#region Stable
+
 		[Switch]
 		[Docs ("Displays this help")]
 		public bool help;
@@ -12,10 +20,6 @@ namespace hashlecter
 		[Switch ("create-sqlite-db")]
 		[Docs ("Creates the database")]
 		public bool create_db;
-
-		[Switch]
-		[Docs ("Painless configuration")]
-		public bool wizard;
 
 		[Argument ("stdin")]
 		[Docs ("Accept input from stdin")]
@@ -25,17 +29,25 @@ namespace hashlecter
 		[Docs ("Input file; one hash per line")]
 		public string input_file;
 
-		[Argument ("dict")]
+		[Argument ("d", "dict")]
 		[Docs ("Input dictionary; one word per line")]
 		public string input_dict;
-
-		[Argument ("m", "method")]
-		[Docs ("Hashing method")]
-		public string method;
 
 		[Argument ("s", "session")]
 		[Docs ("(Optional) Session name")]
 		public string session;
+
+		#endregion
+
+		#region Testing
+
+		[Switch]
+		[Docs ("Painless configuration")]
+		public bool wizard;
+
+		[Argument ("m", "method")]
+		[Docs ("Hashing method")]
+		public string method;
 
 		[Switch ("show")]
 		[Docs ("Show results")]
@@ -45,18 +57,34 @@ namespace hashlecter
 		[Docs ("Don't output anything to stdout")]
 		public bool silent;
 
+		#endregion
+
+		#region Experimental / Unstable
+
+		[Switch ("exp-lazy-eval")]
+		[Docs ("EXPERIMENTAL: Lazy evaluation")]
+		public bool exp_lazy_eval;
+
+		#endregion
+
+		/*
 		[Argument ("v")]
 		[Docs ("Output verbosity")]
 		public string verbosity;
+		*/
 
+		/*
 		public Verbosity Verbosity
 		{
 			get {
+				if (silent)
+					return hashlecter.Verbosity.silent;
 				Verbosity verb;
 				return Enum.TryParse<Verbosity> (verbosity.ToLowerInvariant (), out verb)
 					? verb : hashlecter.Verbosity.low;
 			}
 		}
+		*/
 	}
 }
 

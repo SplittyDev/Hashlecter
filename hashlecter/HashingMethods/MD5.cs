@@ -52,6 +52,33 @@ namespace hashlecter
 		#endregion
 	}
 
+	public class hMD5_Salted : HashingMethod
+	{
+		#region implemented abstract members of HashingMethod
+
+		public override string Name { get { return "md5_salted"; } }
+
+		public override string FriendlyName { get { return "Simple Salted MD5"; } }
+
+		public override string Format { get { return "md5($p.$s)"; } }
+
+		public override bool CheckHash (string refhash, string input, out string output) {
+			output = string.Empty;
+			if (input == null || refhash == null)
+				return false;
+			var parts = refhash.Split (':');
+			var realref = parts[0];
+			var s = parts[1];
+			var hash = MD5 (input + s);
+			var success = realref == hash;
+			if (success)
+				output = input;
+			return success;
+		}
+
+		#endregion
+	}
+
 	public class hMD5_MyBB : HashingMethod
 	{
 		#region implemented abstract members of HashingMethod
@@ -70,8 +97,6 @@ namespace hashlecter
 			var realref = parts[0];
 			var s = parts[1];
 			var hash = MD5 (MD5 (s) + MD5 (input));
-			if (input == "lunalupo")
-				Console.WriteLine ("Refhash: {0}\nCalculated: {1}", realref, hash);
 			var success = realref == hash;
 			if (success)
 				output = input;

@@ -39,11 +39,14 @@ namespace hashlecter
 			// Stopwatch for measuring time
 			var watch = Stopwatch.StartNew ();
 
-			// Update_Screen task
-			var update = Task.Factory.StartNew (() => Update_Screen (watch));
+			if (!MainClass.options.silent) {
 
-			// Update_Stats task
-			var update_avg = Task.Factory.StartNew (Update_Stats);
+				// Update_Screen task
+				var update = Task.Factory.StartNew (() => Update_Screen (watch));
+
+				// Update_Stats task
+				var update_avg = Task.Factory.StartNew (Update_Stats);
+			}
 
 			// Open dictionary file for reading
 			using (var fdict = File.OpenRead (dictionary_path))
@@ -127,6 +130,17 @@ namespace hashlecter
 				// We're done!
 				// Tell all tasks to stop
 				done = true;
+				watch.Stop ();
+			}
+
+			// Display the correct stats after exiting
+			if (!MainClass.options.silent) {
+				
+				avg = (avg + avg_tmp) / 2;
+				max = Math.Max (max, avg_tmp);
+				avg_tmp = 0;
+
+				Update_Screen (watch);
 			}
 		}
 
@@ -138,11 +152,14 @@ namespace hashlecter
 			// Stopwatch for measuring time
 			var watch = Stopwatch.StartNew ();
 
-			// Update_Screen task
-			var update = Task.Factory.StartNew (() => Update_Screen (watch));
+			if (!MainClass.options.silent) {
+				
+				// Update_Screen task
+				var update = Task.Factory.StartNew (() => Update_Screen (watch));
 
-			// Update_Stats task
-			var update_avg = Task.Factory.StartNew (Update_Stats);
+				// Update_Stats task
+				var update_avg = Task.Factory.StartNew (Update_Stats);
+			}
 
 			// Lazy approach
 			var dictionary = File.ReadLines (dictionary_path);
@@ -211,6 +228,17 @@ namespace hashlecter
 			}
 
 			done = true;
+			watch.Stop ();
+
+			// Display the correct stats after exiting
+			if (!MainClass.options.silent) {
+
+				avg = (avg + avg_tmp) / 2;
+				max = Math.Max (max, avg_tmp);
+				avg_tmp = 0;
+
+				Update_Screen (watch);
+			}
 		}
 
 		static void Update_Screen (Stopwatch watch) {
@@ -219,8 +247,8 @@ namespace hashlecter
 
 				// Basic
 				Console.WriteLine ("[Basic]");
-				Console.WriteLine ("Speed  : {0} hash/s", avg);
-				Console.WriteLine ("Max    : {0} hash/s", max);
+				Console.WriteLine ("Speed  : {0} hash/s", avg == 0 ? "N/A\0" : avg.ToString ());
+				Console.WriteLine ("Max    : {0} hash/s", max == 0 ? "N/A\0" : max.ToString ());
 				Console.WriteLine ("Total  : {0} hashes", processed);
 				Console.WriteLine ("Cracked: {0} cracked.", cracked);
 				Console.WriteLine ("Hash   : {0}", current_hash);

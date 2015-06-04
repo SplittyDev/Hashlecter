@@ -61,6 +61,7 @@ namespace hashlecter
 			#if (MD5_COMPLETE)
 			methods.Add (new hMD5 ());
 			methods.Add (new hMD5_Double ());
+			methods.Add (new hMD5_Salted ());
 			methods.Add (new hMD5_MyBB ());
 			#endif
 
@@ -102,13 +103,20 @@ namespace hashlecter
 				Wizard ();
 			}
 
+			// Null-check the method
+			if (string.IsNullOrEmpty (options.method))
+
+				// Fall back to MD5
+				options.method = "md5";
+
 			// Get the method used for cracking the hashes
 			var method = methods.FirstOrDefault (m => m.Name == options.method.ToLowerInvariant ());
 
 			// Check if the cracking method is valid
-			if (method == null) {
-				Console.WriteLine ("Invalid hashing method!");
-				Console.WriteLine ("Run lecter --help to get a list of all available hashing methods.");
+			if (method == default(HashingMethod)) {
+
+				Console.Error.WriteLine ("Please specify a valid hashing method.");
+				Console.Error.WriteLine ("Run lecter --help to get a list of valid hashing methods.");
 				return;
 			}
 
@@ -123,8 +131,16 @@ namespace hashlecter
 				input_hashes = FromFile (options.input_file);
 
 			// Perform dictionary attack
-			if (!string.IsNullOrEmpty (options.input_dict))
-				DictionaryAttack.Run (input_hashes, method, options.input_dict);
+			if (!string.IsNullOrEmpty (options.input_dict)) {
+
+				// Experimental lazy evaluation
+				if (options.exp_lazy_eval)
+					DictionaryAttack.RunLazy (input_hashes, method, options.input_dict);
+
+				// Stable evaluation
+				else
+					DictionaryAttack.Run (input_hashes, method, options.input_dict);
+			}
 
 			// Perform bruteforce attack
 			// TODO: Add bruteforce attack
