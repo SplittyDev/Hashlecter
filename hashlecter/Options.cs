@@ -9,6 +9,10 @@ namespace hashlecter
 		[Docs ("Displays this help")]
 		public bool help;
 
+		[Switch ("create-sqlite-db")]
+		[Docs ("Creates the database")]
+		public bool create_db;
+
 		[Switch]
 		[Docs ("Painless configuration")]
 		public bool wizard;

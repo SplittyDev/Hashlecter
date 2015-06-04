@@ -64,9 +64,6 @@ namespace hashlecter
 			methods.Add (new hMD5_MyBB ());
 			#endif
 
-			// Connect to the SQLite database
-			db = Database.Factory.CreateSQLite (SQLITE_DB);
-
 			// Parse command-line arguments using libArgument
 			options = ArgumentParser.Parse<Options> (args);
 
@@ -76,7 +73,17 @@ namespace hashlecter
 			// Get or create a session identifier
 			session = string.IsNullOrEmpty (options.session) ? GenerateSession () : options.session;
 
-			if (options.help) {
+			// Connect to the SQLite database
+			db = Database.Factory.CreateSQLite (SQLITE_DB);
+
+			// Return if the user just wanted to make
+			// sure that the db got created
+			if (options.create_db) {
+				return;
+			}
+
+			// Display help
+			else if (options.help) {
 				PreHelp ();
 				ArgumentParser.Help ();
 				Help ();
@@ -84,13 +91,15 @@ namespace hashlecter
 				return;
 			}
 
-			if (options.wizard) {
-				Wizard ();
-			}
-
-			if (options.show) {
+			// Show all the cracked hashes
+			else if (options.show) {
 				db.Show (string.IsNullOrEmpty (options.session) ? string.Empty : session);
 				return;
+			}
+
+			// Call the magician
+			else if (options.wizard) {
+				Wizard ();
 			}
 
 			// Get the method used for cracking the hashes
