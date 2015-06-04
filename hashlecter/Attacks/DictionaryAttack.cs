@@ -14,8 +14,8 @@ namespace hashlecter
 		const int BUFFER_SZ = 102400;
 
 		static DictionaryAttackOptions options;
-		static int avg, avg_tmp, max;
-		static int processed, loaded, cracked;
+		static volatile int avg, avg_tmp, max;
+		static volatile int processed, loaded, cracked;
 		static string dict_current, current_hash;
 		static bool done;
 
@@ -104,7 +104,7 @@ namespace hashlecter
 
 								// Increment the amount of successfully collided hashes
 								// (for the Update_Screen task)
-								cracked++;
+								++cracked;
 
 								// Add the collision to the database
 								MainClass.db.Add (MainClass.session, hash, output);
@@ -136,11 +136,7 @@ namespace hashlecter
 			// Display the correct stats after exiting
 			if (!MainClass.options.silent) {
 				
-				avg = (avg + avg_tmp) / 2;
-				max = Math.Max (max, avg_tmp);
-				avg_tmp = 0;
-
-				Update_Screen (watch);
+				Update_Screen (watch, force: true);
 			}
 		}
 
@@ -208,7 +204,7 @@ namespace hashlecter
 
 							// Increment the amount of successfully collided hashes
 							// (for the Update_Screen task)
-							cracked++;
+							++cracked;
 
 							// Add the collision to the database
 							MainClass.db.Add (MainClass.session, hash, output);
@@ -232,23 +228,21 @@ namespace hashlecter
 
 			// Display the correct stats after exiting
 			if (!MainClass.options.silent) {
-
-				avg = (avg + avg_tmp) / 2;
-				max = Math.Max (max, avg_tmp);
-				avg_tmp = 0;
-
-				Update_Screen (watch);
+				
+				Update_Screen (watch, force: true);
 			}
 		}
 
-		static void Update_Screen (Stopwatch watch) {
-			while (!done) {
+		static void Update_Screen (Stopwatch watch, bool force = false) {
+			while (!done || force) {
+				
+				force = false;
 				Console.Clear ();
 
 				// Basic
 				Console.WriteLine ("[Basic]");
-				Console.WriteLine ("Speed  : {0} hash/s", avg == 0 ? "N/A\0" : avg.ToString ());
-				Console.WriteLine ("Max    : {0} hash/s", max == 0 ? "N/A\0" : max.ToString ());
+				Console.WriteLine ("Speed  : {0} hash/s", avg == 0 ? "N/A" : avg.ToString ());
+				Console.WriteLine ("Max    : {0} hash/s", max == 0 ? "N/A" : max.ToString ());
 				Console.WriteLine ("Total  : {0} hashes", processed);
 				Console.WriteLine ("Cracked: {0} cracked.", cracked);
 				Console.WriteLine ("Hash   : {0}", current_hash);
@@ -267,6 +261,11 @@ namespace hashlecter
 				Console.WriteLine ("Source : {0}", MainClass.SQLITE_DB);
 				Console.WriteLine ("Session: {0}", MainClass.session);
 				Console.WriteLine ();
+
+				// N/A?
+				if (avg == 0 || max == 0)
+					Console.WriteLine ("Info: N/A means that Hashlecter couldn't collect enough information\n" +
+						"      to display the average/max speed. Don't worry about it.\n");
 
 				if (cracked > 0)
 					Console.WriteLine ("Use lecter -s {0} --show to see the results.", MainClass.session);
