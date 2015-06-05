@@ -3,3 +3,21 @@ To the extent possible under law, [SplittyDev](https://github.com/SplittyDev) ha
 
 # Hashlecter
 Free (as in speech) md5 hash collider.
+
+## Building Hashlecter
+### Building under *nix (mono)
+```
+# git clone https://github.com/SplittyDev/Hashlecter.git hashlecter
+# cd hashlecter
+# xbuild /p:Configuration=Release
+```
+
+### Building under Windows
+```
+> git clone https://github.com/SplittyDev/Hashlecter.git hashlecter
+> cd hashlecter
+> msbuild /p:Configuration=Release
+```
+
+### Building using Visual Studio / MonoDevelop
+Just open the solution file and build the project in Release mode
