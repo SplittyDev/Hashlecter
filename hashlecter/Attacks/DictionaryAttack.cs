@@ -11,13 +11,23 @@ namespace hashlecter
 {
 	public static class DictionaryAttack
 	{
+		#region Constants
+
 		const int BUFFER_SZ = 102400;
+
+		#endregion
+
+		#region Static Fields
 
 		static DictionaryAttackOptions options;
 		static volatile int avg, avg_tmp, max;
 		static volatile int processed, loaded, cracked;
 		static string dict_current, current_hash;
 		static bool done;
+
+		#endregion
+
+		#region Static Properties
 
 		public static DictionaryAttackOptions Options {
 			get {
@@ -30,6 +40,8 @@ namespace hashlecter
 				return options;
 			}
 		}
+
+		#endregion
 
 		public static void Run (string[] hashes, HashingMethod method, string dictionary_path) {
 			
@@ -149,6 +161,10 @@ namespace hashlecter
 			}
 		}
 
+		//
+		// This is an experimental method.
+		// Enable using the --exp-lazy-eval switch
+		//
 		public static void RunLazy (string[] hashes, HashingMethod method, string dictionary_path) {
 			
 			// Dictionary buffer
@@ -178,13 +194,22 @@ namespace hashlecter
 				if (hashes[i].StartsWith ("#"))
 					continue;
 
+				// Make sure that we're working with
+				// a supported hash here
+				switch (method.Algorithm) {
+					case HashingAlgorithm.MD5:
+						if (!hashes[i].IsMD5Hash ())
+							continue;
+						break;
+				}
+
 				current_hash = hashes[i];
 
 				while (dictionary_pos <= dictionary_count) {
 
 					dict = dictionary.Skip (dictionary_pos).Take (BUFFER_SZ);
 					dictionary_pos += BUFFER_SZ;
-					loaded = dictionary_count - dictionary_pos;
+					loaded = dictionary_pos;
 
 					var breakout = false;
 
