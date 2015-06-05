@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Data.SQLite;
+using System.Collections.Generic;
 
 namespace hashlecter
 {
@@ -31,24 +32,31 @@ namespace hashlecter
 		}
 
 		public void Add (string session, string hash, string text) {
-			using (var reader = ExecReader ("SELECT id FROM collisions WHERE hash = \"{0}\" LIMIT 0, 1", hash)) {
+			using (var reader = ExecReader ("SELECT id FROM collisions WHERE hash = @hash LIMIT 0, 1", hash.ToSQLiteParam ("@hash"))) {
 				if (!reader.HasRows) {
 					ExecNonQuery (
 						"INSERT INTO collisions (hash, text) " +
-						"VALUES ('{0}', '{1}');" +
+						"VALUES (@hash, @text);" +
 						"INSERT INTO sessions (session, collision) " +
-						"VALUES ('{2}', '{3}');",
-						hash, text, session, hash);
+						"VALUES (@session, @hash);",
+						hash.ToSQLiteParam ("@hash"),
+						text.ToSQLiteParam ("@text"),
+						session.ToSQLiteParam ("@session")
+					);
 				}
 				else {
-					using (var reader2 = ExecReader ("SELECT sessions.id FROM sessions " +
+					using (var reader2 = ExecReader (
+						"SELECT sessions.id FROM sessions " +
 						"INNER JOIN collisions ON sessions.collision = collisions.hash " +
-						"WHERE sessions.session = \"{0}\" LIMIT 0, 1", session)) {
+						"WHERE sessions.session = @session LIMIT 0, 1",
+						session.ToSQLiteParam ("@session")
+					)) {
 						if (!reader2.HasRows) {
 							ExecNonQuery (
 								"INSERT INTO sessions (session, collision) " +
-								"VALUES ('{0}', '{1}');",
-								session, hash
+								"VALUES (@session, @hash);",
+								session.ToSQLiteParam ("@session"),
+								hash.ToSQLiteParam ("@hash")
 							);
 						}
 					}
@@ -66,9 +74,9 @@ namespace hashlecter
 				reader = ExecReader (
 					"SELECT collisions.id, hash, text FROM collisions " +
 						"INNER JOIN sessions ON collisions.hash = sessions.collision " +
-						"WHERE sessions.session = \"{0}\" " +
+						"WHERE sessions.session = @session " +
 						"ORDER BY collisions.id ASC",
-				session);
+					session.ToSQLiteParam ("@session"));
 			using (reader) {
 				if (!reader.HasRows) {
 					Console.WriteLine ("No results.");
@@ -90,21 +98,30 @@ namespace hashlecter
 			}
 		}
 
-		void ExecNonQuery (string query, params object[] args) {
+		void ExecNonQuery (string query, params KeyValuePair<string, object>[] args) {
 			var com = con.CreateCommand ();
-			com.CommandText = string.Format (query, args);
+			com.CommandText = query;
+			foreach (var kvp in args)
+				com.Parameters.Add (new SQLiteParameter (kvp.Key, kvp.Value));
+			com.Prepare ();
 			com.ExecuteNonQuery ();
 		}
 
-		object ExecScalar (string query, params object[] args) {
+		object ExecScalar (string query, params KeyValuePair<string, object>[] args) {
 			var com = con.CreateCommand ();
-			com.CommandText = string.Format (query, args);
+			com.CommandText = query;
+			foreach (var kvp in args)
+				com.Parameters.Add (new SQLiteParameter (kvp.Key, kvp.Value));
+			com.Prepare ();
 			return com.ExecuteScalar ();
 		}
 
-		SQLiteDataReader ExecReader (string query, params object[] args) {
+		SQLiteDataReader ExecReader (string query, params KeyValuePair<string, object>[] args) {
 			var com = con.CreateCommand ();
-			com.CommandText = string.Format (query, args);
+			com.CommandText = query;
+			foreach (var kvp in args)
+				com.Parameters.Add (new SQLiteParameter (kvp.Key, kvp.Value));
+			com.Prepare ();
 			return com.ExecuteReader ();
 		}
 

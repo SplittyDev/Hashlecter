@@ -54,6 +54,7 @@
     <Compile Include="Attacks\DictionaryAttack.cs" />
     <Compile Include="Enumerations\HashingAlgorithm.cs" />
     <Compile Include="Extensions\HashCheck.cs" />
+    <Compile Include="Extensions\SQLiteExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
