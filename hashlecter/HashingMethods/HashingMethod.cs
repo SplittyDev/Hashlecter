@@ -4,7 +4,13 @@ using MD5x = System.Security.Cryptography.MD5;
 
 namespace hashlecter
 {
-	public abstract class HashingMethod {
+	public abstract partial class HashingMethod {
+
+		/// <summary>
+		/// Gets the hashing algorithm.
+		/// </summary>
+		/// <value>The hashing algorithm.</value>
+		public abstract HashingAlgorithm Algorithm { get; }
 
 		/// <summary>
 		/// Name of the hashing method
@@ -32,26 +38,6 @@ namespace hashlecter
 		/// <param name="input">Input.</param>
 		/// <param name="output">Output.</param>
 		public abstract bool CheckHash (string refhash, string input, out string output);
-
-		/// <summary>
-		/// Calculates the MD5-hash of the given string
-		/// </summary>
-		/// <returns>Hexadecimal representation of the MD5-hash.</returns>
-		/// <param name="str">Input string.</param>
-		public static string MD5 (string str) {
-			var bytes = Encoding.ASCII.GetBytes (str);
-			byte[] hash;
-
-			// This looks like it'd be really slow
-			// and it probably is. But the .Net MD5 implementation
-			// sucks and is not thread safe, so we need to instantiate
-			// a new one every time we want to hash something.
-			// gg Microsoft!
-			using (var hasher = MD5x.Create ()) {
-				hash = hasher.ComputeHash (bytes);
-			}
-			return hash.ToHex ().ToLowerInvariant ();
-		}
 	}
 }
 

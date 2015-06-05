@@ -1,17 +1,42 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using MD5x = System.Security.Cryptography.MD5;
 
 namespace hashlecter
 {
+	public abstract partial class HashingMethod {
+		
+		/// <summary>
+		/// Calculates the MD5-hash of the given string
+		/// </summary>
+		/// <returns>Hexadecimal representation of the MD5-hash.</returns>
+		/// <param name="str">Input string.</param>
+		public static string MD5 (string str) {
+			
+			var bytes = Encoding.ASCII.GetBytes (str);
+			byte[] hash;
+
+			// This looks like it'd be really slow
+			// and it probably is. But the .Net MD5 implementation
+			// sucks and is not thread safe, so we need to instantiate
+			// a new one every time we want to hash something.
+			// gg Microsoft!
+			using (var hasher = MD5x.Create ()) {
+				hash = hasher.ComputeHash (bytes);
+			}
+
+			return hash.ToHex ().ToLowerInvariant ();
+		}
+	}
+
 	public class hMD5 : HashingMethod
 	{
 		#region implemented abstract members of HashingMethod
 
+		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.MD5; } }
 		public override string Name { get { return "md5"; } }
-
 		public override string FriendlyName { get { return "MD5"; } }
-
 		public override string Format { get { return "md5($p)"; } }
 
 		public override bool CheckHash (string refhash, string input, out string output) {
@@ -32,10 +57,9 @@ namespace hashlecter
 	{
 		#region implemented abstract members of HashingMethod
 
+		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.MD5; } }
 		public override string Name { get { return "md5_double"; } }
-
 		public override string FriendlyName { get { return "Two-Round MD5"; } }
-
 		public override string Format { get { return "md5(md5($p))"; } }
 
 		public override bool CheckHash (string refhash, string input, out string output) {
@@ -56,10 +80,9 @@ namespace hashlecter
 	{
 		#region implemented abstract members of HashingMethod
 
+		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.MD5; } }
 		public override string Name { get { return "md5_salted"; } }
-
 		public override string FriendlyName { get { return "Simple Salted MD5"; } }
-
 		public override string Format { get { return "md5($p.$s)"; } }
 
 		public override bool CheckHash (string refhash, string input, out string output) {
@@ -83,10 +106,9 @@ namespace hashlecter
 	{
 		#region implemented abstract members of HashingMethod
 
+		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.MD5; } }
 		public override string Name { get { return "md5_mybb"; } }
-
 		public override string FriendlyName { get { return "MyBB-Style Salted MD5"; } }
-
 		public override string Format { get { return "md5(md5($s).md5($p))"; } }
 
 		public override bool CheckHash (string refhash, string input, out string output) {

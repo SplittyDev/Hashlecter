@@ -21,7 +21,7 @@ namespace hashlecter
 		[Docs ("Creates the database")]
 		public bool create_db;
 
-		[Argument ("stdin")]
+		[Switch ("stdin")]
 		[Docs ("Accept input from stdin")]
 		public bool input_stdin;
 

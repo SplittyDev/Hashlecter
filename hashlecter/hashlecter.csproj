@@ -52,6 +52,8 @@
     <Compile Include="DatabaseBindings\Database.cs" />
     <Compile Include="HashingMethods\HashingMethod.cs" />
     <Compile Include="Attacks\DictionaryAttack.cs" />
+    <Compile Include="Enumerations\HashingAlgorithm.cs" />
+    <Compile Include="Extensions\HashCheck.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
