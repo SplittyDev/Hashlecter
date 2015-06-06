@@ -11,12 +11,14 @@ Free (as in speech) md5 hash collider.
 | -i    | --input    | Argument | Read hashes from file
 | -d    | --dict     | Argument | Perform a dictionary-attack using the specified file
 | -s    | --session  | Argument | Specify a session name
+| -r    | --rounds   | Argument | Specify hashing rounds
 |       | --stdin    | Switch   | Read hashes from stdin
 |       | --silent   | Switch   | Don't output anything to stdout
 |       | --wizard   | Switch   | Easy configuration
 |       | --show     | Switch   | Show results; can be combined with `-s/--session`
 
-You don't need to specify a hashing method if you're going to process md5 hashes.
+Info:  
+The default hashing method is md5.
 
 #### Experimental/Unstable features
 | Short | Long            | Type     | Description
