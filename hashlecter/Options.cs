@@ -57,6 +57,10 @@ namespace hashlecter
 		[Docs ("Don't output anything to stdout")]
 		public bool silent;
 
+		[Argument ("r", "rounds")]
+		[Docs ("Custom n-round hashing")]
+		public int rounds;
+
 		#endregion
 
 		#region Experimental / Unstable

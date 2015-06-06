@@ -43,6 +43,9 @@ namespace hashlecter
 			if (refhash == null || input == null)
 				return false;
 			var hash = MD5 (input);
+			if (MainClass.options.rounds > 0)
+				for (var i = 1; i < MainClass.options.rounds; i++)
+					hash = MD5 (hash);
 			var success = refhash == hash;
 			if (success)
 				output = input;
