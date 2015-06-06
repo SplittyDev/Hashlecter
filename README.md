@@ -1,19 +1,27 @@
 [![CC0](http://i.creativecommons.org/p/zero/1.0/88x31.png)](http://creativecommons.org/publicdomain/zero/1.0/)  
-To the extent possible under law, [SplittyDev](https://github.com/SplittyDev) has waived all copyright and related or neighboring rights to Hashlecter. This work is published from: Deutschland.
+To the extent possible under law, [SplittyDev](https://github.com/SplittyDev) has waived all copyright and related or neighboring rights to Hashlecter.
 
 ![HashLecter Logo](http://i.imgur.com/Wt4bxbY.png)  
 Free (as in speech) md5 hash collider.
 
 ## Using Hashlecter
-### Basics
-Feeding a list of hashes to lecter: `-i/--input <path/to/file>`  
-Accepting input from stdin: `--stdin`  
-Specifying the dictionary for a dictionary attack: `-d/--dict <path/to/file>`  
-Specifying the hashing method: `-m/--method <hashing_method>`  
-Specifying a session name: `-s/--session <session_name>`  
-Suppress output to stdout: `--silent`
+### Command-line arguments
+| Short | Long       | Type     | Description
+|-------|------------|----------|-------------
+| -i    | --input    | Argument | Read hashes from file
+| -d    | --dict     | Argument | Perform a dictionary-attack using the specified file
+|       | --stdin    | Switch   | Read hashes from stdin
+| -s    | --session  | Switch   | Specify a session name
+|       | --silent   | Switch   | Don't output anything to stdout
+|       | --wizard   | Switch   | Easy configuration
+|       | --show     | Switch   | Show results; can be combined with `-s/--session`
 
 You don't need to specify a hashing method if you're going to process md5 hashes.
+
+#### Experimental/Unstable features
+| Short | Long            | Type     | Description
+|-------|-----------------|----------|-------------
+|       | --exp-lazy-eval | Switch   | Lazy evaluation of input dictionary
 
 ### Hashing methods
 * . md5
@@ -22,9 +30,23 @@ You don't need to specify a hashing method if you're going to process md5 hashes
 * ! md5_mybb
 * . sha1
 
-Important:  
-Hashing methods marked with an exclamation point  
-need to be provided using the following format: `hash:salt`
+Hashing methods marked with a period use the following format:
+```
+# This is a comment. It will be ignored.
+# Hash 1
+6ae99d4d2de5e3cbd29fec87ae7d76eb
+# Hash 2
+50a39ec9e0e46cf2826eb5745e1c800b
+```
+
+Hashing methods marked with an exclamation point use the following format:
+```
+# This is a comment. It will be ignored.
+# Hash 1 : Salt 1
+6ae99d4d2de5e3cbd29fec87ae7d76eb:91704826
+# Hash 2 : Salt 2
+50a39ec9e0e46cf2826eb5745e1c800b:72946193
+```
 
 ### Examples (mono)
 Cracking the md5 hash for "hello" using dictionary "dict":  
