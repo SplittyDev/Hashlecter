@@ -70,6 +70,11 @@ namespace hashlecter
 				HashingMethod.New<hSHA1> (),
 				HashingMethod.New<hSHA1_Double> (),
 				#endif
+
+				#if SHA_COMPLETE || SHA256_COMPLETE
+				HashingMethod.New<hSHA256> (),
+				HashingMethod.New<hSHA256_Double> (),
+				#endif
 			};
 
 			// Parse command-line arguments using libArgument

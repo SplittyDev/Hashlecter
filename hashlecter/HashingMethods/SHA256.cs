@@ -5,20 +5,19 @@ using System.Text;
 namespace hashlecter
 {
 	public abstract partial class HashingMethod {
-		
+
 		/// <summary>
-		/// Calculates the SHA1-hash of the given string
+		/// Calculates the SHA256-hash of the given string
 		/// </summary>
-		/// <returns>Hexadecimal representation of the SHA1-hash.</returns>
+		/// <returns>Hexadecimal representation of the SHA256-hash.</returns>
 		/// <param name="str">Input string.</param>
-		public static string SHA1 (string str) {
+		public static string SHA256 (string str) {
 
 			var bytes = Encoding.ASCII.GetBytes (str);
 			byte[] hash;
 
-			// We're using the native SHA1 implementation here
-			// since it's about 3 times faster than the managed implementation.
-			using (var hasher = new SHA1CryptoServiceProvider ()) {
+			// We're using the native SHA256 implementation here.
+			using (var hasher = new SHA256CryptoServiceProvider ()) {
 				hash = hasher.ComputeHash (bytes);
 			}
 
@@ -26,23 +25,23 @@ namespace hashlecter
 		}
 	}
 
-	public class hSHA1 : HashingMethod
+	public class hSHA256 : HashingMethod
 	{
 		#region implemented abstract members of HashingMethod
 
-		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.SHA1; } }
-		public override string Name { get { return "sha1"; } }
-		public override string FriendlyName { get { return "SHA-1"; } }
-		public override string Format { get { return "sha1($p)"; } }
+		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.SHA256; } }
+		public override string Name { get { return "sha256"; } }
+		public override string FriendlyName { get { return "SHA-256"; } }
+		public override string Format { get { return "sha256($p)"; } }
 
 		public override bool CheckHash (string refhash, string input, out string output) {
 			output = string.Empty;
 			if (refhash == null || input == null)
 				return false;
-			var hash = SHA1 (input);
+			var hash = SHA256 (input);
 			if (MainClass.options.rounds > 0)
 				for (var i = 1; i < MainClass.options.rounds; i++)
-					hash = SHA1 (hash);
+					hash = SHA256 (hash);
 			var success = refhash == hash;
 			if (success)
 				output = input;
@@ -52,20 +51,20 @@ namespace hashlecter
 		#endregion
 	}
 
-	public class hSHA1_Double : HashingMethod
+	public class hSHA256_Double : HashingMethod
 	{
 		#region implemented abstract members of HashingMethod
 
-		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.SHA1; } }
-		public override string Name { get { return "sha1_double"; } }
-		public override string FriendlyName { get { return "Two-Round SHA-1"; } }
-		public override string Format { get { return "sha1(sha1($p))"; } }
+		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.SHA256; } }
+		public override string Name { get { return "sha256_double"; } }
+		public override string FriendlyName { get { return "Two-Round SHA-256"; } }
+		public override string Format { get { return "sha256(sha256($p))"; } }
 
 		public override bool CheckHash (string refhash, string input, out string output) {
 			output = string.Empty;
 			if (refhash == null || input == null)
 				return false;
-			var hash = SHA1 (SHA1 (input));
+			var hash = SHA256 (SHA256 (input));
 			var success = refhash == hash;
 			if (success)
 				output = input;
