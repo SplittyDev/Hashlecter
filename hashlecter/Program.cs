@@ -68,6 +68,7 @@ namespace hashlecter
 
 				#if SHA_COMPLETE || SHA1_COMPLETE
 				HashingMethod.New<hSHA1> (),
+				HashingMethod.New<hSHA1_Double> (),
 				#endif
 			};
 

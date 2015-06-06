@@ -37,6 +37,10 @@ namespace hashlecter
 		[Docs ("(Optional) Session name")]
 		public string session;
 
+		[Argument ("m", "method")]
+		[Docs ("Hashing method")]
+		public string method;
+
 		#endregion
 
 		#region Testing
@@ -44,10 +48,6 @@ namespace hashlecter
 		[Switch]
 		[Docs ("Painless configuration")]
 		public bool wizard;
-
-		[Argument ("m", "method")]
-		[Docs ("Hashing method")]
-		public string method;
 
 		[Switch ("show")]
 		[Docs ("Show results")]

@@ -48,5 +48,28 @@ namespace hashlecter
 
 		#endregion
 	}
+
+	public class hSHA1_Double : HashingMethod
+	{
+		#region implemented abstract members of HashingMethod
+
+		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.SHA1; } }
+		public override string Name { get { return "sha1_double"; } }
+		public override string FriendlyName { get { return "Two-Round SHA-1"; } }
+		public override string Format { get { return "sha1(sha1($p))"; } }
+
+		public override bool CheckHash (string refhash, string input, out string output) {
+			output = string.Empty;
+			if (refhash == null || input == null)
+				return false;
+			var hash = SHA1 (input);
+			var success = refhash == hash;
+			if (success)
+				output = input;
+			return success;
+		}
+
+		#endregion
+	}
 }
 
