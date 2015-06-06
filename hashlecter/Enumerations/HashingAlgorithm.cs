@@ -4,6 +4,7 @@ namespace hashlecter
 {
 	public enum HashingAlgorithm {
 		MD5,
+		SHA1,
 	}
 }
 

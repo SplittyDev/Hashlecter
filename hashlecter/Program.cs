@@ -1,4 +1,5 @@
 ﻿#define MD5_COMPLETE
+#define SHA_COMPLETE
 
 using System;
 using System.Collections.Generic;
@@ -56,14 +57,19 @@ namespace hashlecter
 		public static void Main (string[] args) {
 			
 			// Create a hashset for storing the hashing methods
-			methods = new HashSet<HashingMethod> ();
+			methods = new HashSet<HashingMethod> {
+				
+				#if MD5_COMPLETE
+				HashingMethod.New<hMD5> (),
+				HashingMethod.New<hMD5_Double> (),
+				HashingMethod.New<hMD5_Salted> (),
+				HashingMethod.New<hMD5_MyBB> (),
+				#endif
 
-			#if (MD5_COMPLETE)
-			methods.Add (new hMD5 ());
-			methods.Add (new hMD5_Double ());
-			methods.Add (new hMD5_Salted ());
-			methods.Add (new hMD5_MyBB ());
-			#endif
+				#if SHA_COMPLETE || SHA1_COMPLETE
+				HashingMethod.New<hSHA1> (),
+				#endif
+			};
 
 			// Parse command-line arguments using libArgument
 			options = ArgumentParser.Parse<Options> (args);

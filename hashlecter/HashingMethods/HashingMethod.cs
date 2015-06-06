@@ -38,6 +38,14 @@ namespace hashlecter
 		/// <param name="input">Input.</param>
 		/// <param name="output">Output.</param>
 		public abstract bool CheckHash (string refhash, string input, out string output);
+
+		/// <summary>
+		/// Creates a new instance of type <typeparamref name="TMethod" />
+		/// </summary>
+		/// <typeparam name="TMethod">The 1st type parameter.</typeparam>
+		public static TMethod New<TMethod> () where TMethod : HashingMethod, new() {
+			return new TMethod ();
+		}
 	}
 }
 

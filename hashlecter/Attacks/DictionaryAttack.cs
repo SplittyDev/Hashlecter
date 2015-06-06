@@ -119,7 +119,7 @@ namespace hashlecter
 								++cracked;
 
 								// Add the collision to the database
-								MainClass.db.Add (MainClass.session, hash, output);
+								MainClass.db.Add (MainClass.session, hash, output, method);
 
 								// Break out of the loop
 								breakout = true;
@@ -187,8 +187,9 @@ namespace hashlecter
 
 				current_hash = hashes[i];
 
-				while (dictionary_pos <= dictionary_count) {
-
+				//while (dictionary_pos <= dictionary_count) {
+				while (dictionary_pos < dictionary_count) {
+					
 					dict = dictionary.Skip (dictionary_pos).Take (BUFFER_SZ);
 					dictionary_pos += BUFFER_SZ;
 					loaded = dictionary_pos;
@@ -223,7 +224,7 @@ namespace hashlecter
 							++cracked;
 
 							// Add the collision to the database
-							MainClass.db.Add (MainClass.session, hash, output);
+							MainClass.db.Add (MainClass.session, hash, output, method);
 
 							// Break out of the loop
 							breakout = true;

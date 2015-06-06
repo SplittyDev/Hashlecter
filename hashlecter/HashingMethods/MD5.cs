@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
-using MD5x = System.Security.Cryptography.MD5;
 
 namespace hashlecter
 {
@@ -22,7 +21,7 @@ namespace hashlecter
 			// sucks and is not thread safe, so we need to instantiate
 			// a new one every time we want to hash something.
 			// gg Microsoft!
-			using (var hasher = MD5x.Create ()) {
+			using (var hasher = new MD5CryptoServiceProvider ()) {
 				hash = hasher.ComputeHash (bytes);
 			}
 

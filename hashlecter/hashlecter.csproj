@@ -55,6 +55,7 @@
     <Compile Include="Enumerations\HashingAlgorithm.cs" />
     <Compile Include="Extensions\HashCheck.cs" />
     <Compile Include="Extensions\SQLiteExtensions.cs" />
+    <Compile Include="HashingMethods\SHA1.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

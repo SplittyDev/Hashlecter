@@ -14,6 +14,7 @@ namespace hashlecter
 		const string TABLE_LAYOUT =
 			"CREATE TABLE IF NOT EXISTS collisions (" +
 			"id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+			"type VARCHAR(64) NOT NULL," +
 			"hash VARCHAR(128) NOT NULL," +
 			"text VARCHAR(128) NOT NULL" +
 			");" +
@@ -36,14 +37,14 @@ namespace hashlecter
 			"SELECT * FROM collisions ORDER BY id ASC";
 
 		const string SELECT_ALL_COLLISIONS_FROM_SESSION =
-			"SELECT collisions.id, hash, text FROM collisions " +
+			"SELECT collisions.id, hash, text, type FROM collisions " +
 			"INNER JOIN sessions ON collisions.hash = sessions.collision " +
 			"WHERE sessions.session = @session " +
 			"ORDER BY collisions.id ASC";
 
 		const string INSERT_COLLISION =
-			"INSERT INTO collisions (hash, text) " +
-			"VALUES (@hash, @text);" +
+			"INSERT INTO collisions (hash, text, type) " +
+			"VALUES (@hash, @text, @type);" +
 			"INSERT INTO sessions (session, collision) " +
 			"VALUES (@session, @hash);";
 
@@ -63,14 +64,15 @@ namespace hashlecter
 			ExecNonQuery (TABLE_LAYOUT);
 		}
 
-		public void Add (string session, string hash, string text) {
+		public void Add (string session, string hash, string text, HashingMethod method) {
 			using (var reader = ExecReader (SELECT_COLLISION_ID, hash.ToSQLiteParam ("@hash"))) {
 				if (!reader.HasRows) {
 					ExecNonQuery (
 						INSERT_COLLISION,
 						hash.ToSQLiteParam ("@hash"),
 						text.ToSQLiteParam ("@text"),
-						session.ToSQLiteParam ("@session")
+						session.ToSQLiteParam ("@session"),
+						method.Algorithm.ToString ().ToSQLiteParam ("@type")
 					);
 				}
 				else {
@@ -98,18 +100,21 @@ namespace hashlecter
 					Console.WriteLine ("No results.");
 					return;
 				}
-				Console.WriteLine ("{0}{1}{2}",
+				Console.WriteLine ("{0}{1}{2}{3}",
 					"ID".PadRight (6),
-					"Hash".PadRight (16),
+					"Method".PadRight (12),
+					"Hash".PadRight (32),
 					"Text".PadRight (20)
 				);
 				while (reader.Read ()) {
 					var id = reader["id"].ToString ().PadRight (6);
+					var method = reader["type"].ToString ().PadRight (12);
+					method = method.Length >= 12 ? new string (method.Take (11).ToArray ()).PadRight (12) : method.PadRight (12);
 					var hash = reader["hash"].ToString ();
-					hash = hash.Length >= 16 ? new string (hash.Take (15).ToArray ()).PadRight (16) : hash.PadRight (16);
+					hash = hash.Length >= 16 ? new string (hash.Take (31).ToArray ()).PadRight (32) : hash.PadRight (32);
 					var text = reader["text"].ToString ();
 					text = text.Length >= 20 ? new string (text.Take (19).ToArray ()).PadRight (20) : text.PadRight (20);
-					Console.WriteLine ("{0}{1}{2}", id, hash, text);
+					Console.WriteLine ("{0}{1}{2}{3}", id, method, hash, text);
 				}
 			}
 		}
