@@ -71,15 +71,6 @@ namespace hashlecter
 					if (hashes[i].StartsWith ("#"))
 						continue;
 
-					// Make sure that we're working with
-					// a supported hash here
-					switch (method.Algorithm) {
-						case HashingAlgorithm.MD5:
-							if (!hashes[i].IsMD5Hash ())
-								continue;
-							break;
-					}
-
 					current_hash = hashes[i];
 
 					// Check if there is still something in the dictionary to read
@@ -193,15 +184,6 @@ namespace hashlecter
 				// Skip comments
 				if (hashes[i].StartsWith ("#"))
 					continue;
-
-				// Make sure that we're working with
-				// a supported hash here
-				switch (method.Algorithm) {
-					case HashingAlgorithm.MD5:
-						if (!hashes[i].IsMD5Hash ())
-							continue;
-						break;
-				}
 
 				current_hash = hashes[i];
 
