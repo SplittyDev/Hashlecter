@@ -20,6 +20,9 @@ Free (as in speech) md5 hash collider.
 Info:  
 The default hashing method is md5.
 
+Important:  
+The `-r/--rounds` option only works with the base hashes (md5, sha1, sha256).
+
 #### Experimental/Unstable features
 | Short | Long            | Type     | Description
 |-------|-----------------|----------|-------------
@@ -32,6 +35,8 @@ The default hashing method is md5.
 * ! md5_mybb
 * . sha1
 * . sha1_double
+* . sha256
+* . sha256_double
 
 Hashing methods marked with a period use the following format:
 ```
