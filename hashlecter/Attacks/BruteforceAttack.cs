@@ -13,7 +13,7 @@ namespace hashlecter
 		const string LOWER_ALPHANUMERIC	= "abcdefghijklmnopqrstuvxzyz";
 		const string UPPER_ALPHANUMERIC	= "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		const string SPECIAL_BASIC		= "!?-$+";
-		const string SPECIAL_ADVANCED	= ".,:;_#&~*'/\\\"%(){}^<>|";
+		const string SPECIAL_ADVANCED	= ".,:;_#&~*'/\\\"%(){}[]^<>|";
 
 		#endregion
 

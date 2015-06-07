@@ -58,6 +58,8 @@
     <Compile Include="HashingMethods\SHA1.cs" />
     <Compile Include="HashingMethods\SHA256.cs" />
     <Compile Include="Attacks\BruteforceAttack.cs" />
+    <Compile Include="HashingMethods\JHash.cs" />
+    <Compile Include="Implementations\JHashCryptoServiceProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -66,5 +68,6 @@
     <Folder Include="DatabaseBindings\" />
     <Folder Include="Extensions\" />
     <Folder Include="Attacks\" />
+    <Folder Include="Implementations\" />
   </ItemGroup>
 </Project>

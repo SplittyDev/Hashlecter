@@ -1,5 +1,6 @@
 ﻿#define MD5_COMPLETE
 #define SHA_COMPLETE
+#define EXP_COMPLETE
 
 using System;
 using System.Collections.Generic;
@@ -74,6 +75,10 @@ namespace hashlecter
 				#if SHA_COMPLETE || SHA256_COMPLETE
 				HashingMethod.New<hSHA256> (),
 				HashingMethod.New<hSHA256_Double> (),
+				#endif
+
+				#if EXP_COMPLETE
+				HashingMethod.New<hJHash> (),
 				#endif
 			};
 
@@ -163,7 +168,9 @@ namespace hashlecter
 			// Perform bruteforce attack
 			// TODO: Add bruteforce attack
 
-			db.Show (session);
+			if (!options.silent) {
+				db.Show (session);
+			}
 		}
 
 		/// <summary>

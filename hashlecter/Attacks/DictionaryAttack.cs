@@ -121,9 +121,12 @@ namespace hashlecter
 								// Add the collision to the database
 								MainClass.db.Add (MainClass.session, hash, output, method);
 
-								// Break out of the loop
-								breakout = true;
-								loopstate_inner.Stop ();
+								if (!MainClass.options.exp_single_cont) {
+									
+									// Break out of the loop
+									breakout = true;
+									loopstate_inner.Stop ();
+								}
 							}
 						});
 

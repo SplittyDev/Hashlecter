@@ -70,6 +70,10 @@ namespace hashlecter
 		[Docs ("EXPERIMENTAL: Lazy evaluation")]
 		public bool exp_lazy_eval;
 
+		[Switch ("exp-single-cont")]
+		[Docs ("Continuous single-hash mode")]
+		public bool exp_single_cont;
+
 		#endregion
 
 		/*
