@@ -7,11 +7,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Codeaddicts.libArgument;
-using System.Text;
 
 namespace hashlecter
 {
@@ -92,7 +92,7 @@ namespace hashlecter
 			// Return if the user just wanted to make
 			// sure that the db got created
 			if (options.create_db) {
-				return;
+				Environment.Exit (0);
 			}
 
 			// Display help
@@ -101,13 +101,13 @@ namespace hashlecter
 				ArgumentParser.Help ();
 				Help ();
 				PostHelp ();
-				return;
+				Environment.Exit (0);
 			}
 
 			// Show all the cracked hashes
 			else if (options.show) {
 				db.Show (string.IsNullOrEmpty (options.session) ? string.Empty : session);
-				return;
+				Environment.Exit (0);
 			}
 
 			// Call the magician
@@ -125,11 +125,11 @@ namespace hashlecter
 			var method = methods.FirstOrDefault (m => m.Name == options.method.ToLowerInvariant ());
 
 			// Check if the cracking method is valid
-			if (method == default(HashingMethod)) {
+			if (method == null || method == default(HashingMethod)) {
 
 				Console.Error.WriteLine ("Please specify a valid hashing method.");
 				Console.Error.WriteLine ("Run lecter --help to get a list of valid hashing methods.");
-				return;
+				Environment.Exit (0);
 			}
 
 			string[] input_hashes = null;
@@ -145,6 +145,12 @@ namespace hashlecter
 			// Perform dictionary attack
 			if (!string.IsNullOrEmpty (options.input_dict)) {
 
+				// Null-check the input file
+				if (input_hashes == null) {
+					Console.Error.WriteLine ("No input was specified.");
+					Environment.Exit (0);
+				}
+
 				// Experimental lazy evaluation
 				if (options.exp_lazy_eval)
 					DictionaryAttack.RunLazy (input_hashes, method, options.input_dict);
@@ -156,6 +162,8 @@ namespace hashlecter
 
 			// Perform bruteforce attack
 			// TODO: Add bruteforce attack
+
+			db.Show (session);
 		}
 
 		/// <summary>

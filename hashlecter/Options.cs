@@ -9,6 +9,7 @@ namespace hashlecter
 		// i: input
 		// m: method
 		// s: session
+		// r: round
 		// v: verbosity
 
 		#region Stable
@@ -41,6 +42,10 @@ namespace hashlecter
 		[Docs ("Hashing method")]
 		public string method;
 
+		[Argument ("r", "rounds")]
+		[Docs ("Custom n-round hashing")]
+		public int rounds;
+
 		#endregion
 
 		#region Testing
@@ -56,10 +61,6 @@ namespace hashlecter
 		[Switch]
 		[Docs ("Don't output anything to stdout")]
 		public bool silent;
-
-		[Argument ("r", "rounds")]
-		[Docs ("Custom n-round hashing")]
-		public int rounds;
 
 		#endregion
 

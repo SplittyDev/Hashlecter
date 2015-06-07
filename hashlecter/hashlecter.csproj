@@ -57,6 +57,7 @@
     <Compile Include="Extensions\SQLiteExtensions.cs" />
     <Compile Include="HashingMethods\SHA1.cs" />
     <Compile Include="HashingMethods\SHA256.cs" />
+    <Compile Include="Attacks\BruteforceAttack.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
