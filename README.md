@@ -23,7 +23,8 @@ The default hashing method is md5.
 If you want to generate a hash, just specify the input string using -i/--input
 
 Important:  
-The `-r/--rounds` option only works with the base hashes (md5, sha1, sha256).
+The `-r/--rounds` argument doesn't work with variations of hashes.  
+If you want to try 6-round md5, do `-r 6 -m md5`, but not `-r 3 -m md5_double`.
 
 #### Experimental/Unstable features
 | Short | Long              | Type     | Description
