@@ -19,7 +19,7 @@ Free (as in speech) md5 hash collider.
 |       | --show     | Switch   | Show results; can be combined with `-s/--session`
 
 Info:  
-The default hashing method is md5.
+The default hashing method is md5.  
 If you want to generate a hash, just specify the input string using -i/--input
 
 Important:  
