@@ -41,6 +41,7 @@ If you want to try 6-round md5, do `-r 6 -m md5`, but not `-r 3 -m md5_double`.
 * . sha1_double
 * . sha256
 * . sha256_double
+* . jhash
 
 Hashing methods marked with a period use the following format:
 ```
