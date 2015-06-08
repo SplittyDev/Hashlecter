@@ -137,6 +137,21 @@ namespace hashlecter
 				Environment.Exit (0);
 			}
 
+			// Check if we need to generate a hash
+			if (options.gen) {
+
+				// Read input string from -i/--input argument
+				if (!string.IsNullOrEmpty (options.input_file))
+					Console.WriteLine (method.Hash (options.input_file));
+				
+				// Hash an empty string of no string is given
+				else
+					Console.WriteLine (method.Hash (string.Empty));
+
+				// Exit
+				Environment.Exit (0);
+			}
+
 			string[] input_hashes = null;
 
 			// Grab input from stdin

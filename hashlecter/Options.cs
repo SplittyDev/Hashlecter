@@ -6,6 +6,7 @@ namespace hashlecter
 	public class Options
 	{
 		// d: dict
+		// g: generate
 		// i: input
 		// m: method
 		// s: session
@@ -61,6 +62,10 @@ namespace hashlecter
 		[Switch]
 		[Docs ("Don't output anything to stdout")]
 		public bool silent;
+
+		[Switch ("g", "gen")]
+		[Docs ("Generate hash")]
+		public bool gen;
 
 		#endregion
 

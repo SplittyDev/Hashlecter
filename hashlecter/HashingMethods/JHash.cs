@@ -25,7 +25,8 @@ namespace hashlecter
 	{
 		#region implemented abstract members of HashingMethod
 
-		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.SHA256; } }
+		public override HashDelegate Hash { get { return HashingMethod.JHash; } }
+		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.JHash; } }
 		public override string Name { get { return "jhash"; } }
 		public override string FriendlyName { get { return "JHash"; } }
 		public override string Format { get { return "jhash($p)"; } }

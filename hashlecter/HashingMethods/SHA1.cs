@@ -30,6 +30,7 @@ namespace hashlecter
 	{
 		#region implemented abstract members of HashingMethod
 
+		public override HashDelegate Hash { get { return HashingMethod.SHA1; } }
 		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.SHA1; } }
 		public override string Name { get { return "sha1"; } }
 		public override string FriendlyName { get { return "SHA-1"; } }
@@ -56,6 +57,7 @@ namespace hashlecter
 	{
 		#region implemented abstract members of HashingMethod
 
+		public override HashDelegate Hash { get { return HashingMethod.SHA1; } }
 		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.SHA1; } }
 		public override string Name { get { return "sha1_double"; } }
 		public override string FriendlyName { get { return "Two-Round SHA-1"; } }

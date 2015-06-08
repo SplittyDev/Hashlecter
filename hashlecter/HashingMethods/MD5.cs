@@ -33,6 +33,7 @@ namespace hashlecter
 	{
 		#region implemented abstract members of HashingMethod
 
+		public override HashDelegate Hash { get { return HashingMethod.MD5; } }
 		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.MD5; } }
 		public override string Name { get { return "md5"; } }
 		public override string FriendlyName { get { return "MD5"; } }
@@ -59,6 +60,7 @@ namespace hashlecter
 	{
 		#region implemented abstract members of HashingMethod
 
+		public override HashDelegate Hash { get { return HashingMethod.MD5; } }
 		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.MD5; } }
 		public override string Name { get { return "md5_double"; } }
 		public override string FriendlyName { get { return "Two-Round MD5"; } }
@@ -82,6 +84,7 @@ namespace hashlecter
 	{
 		#region implemented abstract members of HashingMethod
 
+		public override HashDelegate Hash { get { return HashingMethod.MD5; } }
 		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.MD5; } }
 		public override string Name { get { return "md5_salted"; } }
 		public override string FriendlyName { get { return "Simple Salted MD5"; } }
@@ -108,6 +111,7 @@ namespace hashlecter
 	{
 		#region implemented abstract members of HashingMethod
 
+		public override HashDelegate Hash { get { return HashingMethod.MD5; } }
 		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.MD5; } }
 		public override string Name { get { return "md5_mybb"; } }
 		public override string FriendlyName { get { return "MyBB-Style Salted MD5"; } }

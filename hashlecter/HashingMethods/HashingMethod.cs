@@ -6,6 +6,9 @@ namespace hashlecter
 {
 	public abstract partial class HashingMethod {
 
+		public delegate string HashDelegate (string str);
+		public abstract HashDelegate Hash { get; }
+
 		/// <summary>
 		/// Gets the hashing algorithm.
 		/// </summary>
