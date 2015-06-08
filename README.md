@@ -12,6 +12,7 @@ Free (as in speech) md5 hash collider.
 | -d    | --dict     | Argument | Perform a dictionary-attack using the specified file
 | -s    | --session  | Argument | Specify a session name
 | -r    | --rounds   | Argument | Specify hashing rounds
+| -g    | --gen      | Switch   | Generate a hash
 |       | --stdin    | Switch   | Read hashes from stdin
 |       | --silent   | Switch   | Don't output anything to stdout
 |       | --wizard   | Switch   | Easy configuration
@@ -19,14 +20,16 @@ Free (as in speech) md5 hash collider.
 
 Info:  
 The default hashing method is md5.
+If you want to generate a hash, just specify the input string using -i/--input
 
 Important:  
 The `-r/--rounds` option only works with the base hashes (md5, sha1, sha256).
 
 #### Experimental/Unstable features
-| Short | Long            | Type     | Description
-|-------|-----------------|----------|-------------
-|       | --exp-lazy-eval | Switch   | Lazy evaluation of input dictionary
+| Short | Long              | Type     | Description
+|-------|-------------------|----------|-------------
+|       | --exp-lazy-eval   | Switch   | Lazy evaluation of input dictionary
+|       | --exp-single-cont | Switch   | Don't stop after finding a collision
 
 ### Hashing methods
 * . md5
