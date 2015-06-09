@@ -213,6 +213,9 @@ namespace hashlecter
 
 			if (!options.silent) {
 				db.Show (session);
+
+				if (options.wizard)
+					Console.Read ();
 			}
 		}
 
@@ -318,6 +321,7 @@ namespace hashlecter
 				Console.WriteLine ("Method: {0}", methods.First (x => x.Name == options.method).FriendlyName);
 				Console.WriteLine ("\nNow select the attacking method.\n");
 				Console.WriteLine ("[0] Dictionary attack");
+				Console.WriteLine ("[1] Bruteforce attack");
 				Console.Write ("\nYour choice> ");
 				var input = Console.ReadLine ();
 				int choice;
@@ -325,24 +329,34 @@ namespace hashlecter
 					continue;
 				valid_choice = true;
 				switch (choice) {
-					case 0:
-						Console.Clear ();
-						Console.WriteLine ("Hashlecter Wizard\n");
-						Console.WriteLine ("Input: {0}", Path.GetFileName (options.input_file));
-						Console.WriteLine ("Method: {0}", methods.First (x => x.Name == options.method).FriendlyName);
-						Console.WriteLine ("\nDrag the dictionary file here.");
-						options.input_dict = ReadSilent ();
-						break;
-					default:
-						valid_choice = false;
-						continue;
+				case 0:
+					Console.Clear ();
+					Console.WriteLine ("Hashlecter Wizard\n");
+					Console.WriteLine ("Attack: Dictionary");
+					Console.WriteLine ("Input: {0}", Path.GetFileName (options.input_file));
+					Console.WriteLine ("Method: {0}", methods.First (x => x.Name == options.method).FriendlyName);
+					Console.WriteLine ("\nDrag the dictionary file here.");
+					options.input_dict = ReadSilent ();
+					Console.Clear ();
+					Console.WriteLine ("Hashlecter Wizard\n");
+					Console.WriteLine ("Attack: Dictionary");
+					Console.WriteLine ("Input: {0}", Path.GetFileName (options.input_file));
+					Console.WriteLine ("Method: {0}", methods.First (x => x.Name == options.method).FriendlyName);
+					Console.WriteLine ("Dictionary: {0}", Path.GetFileName (options.input_dict));
+					break;
+				case 1:
+					Console.Clear ();
+					Console.WriteLine ("Hashlecter Wizard\n");
+					Console.WriteLine ("Attack: Bruteforce");
+					Console.WriteLine ("Input: {0}", Path.GetFileName (options.input_file));
+					Console.WriteLine ("Method: {0}", methods.First (x => x.Name == options.method).FriendlyName);
+					options.incremental = true;
+					break;
+				default:
+					valid_choice = false;
+					continue;
 				}
 			}
-			Console.Clear ();
-			Console.WriteLine ("Hashlecter Wizard\n");
-			Console.WriteLine ("Input: {0}", Path.GetFileName (options.input_file));
-			Console.WriteLine ("Method: {0}", methods.First (x => x.Name == options.method).FriendlyName);
-			Console.WriteLine ("Dictionary: {0}", Path.GetFileName (options.input_dict));
 			Console.WriteLine ("\nPress any key to start.");
 			Console.Read ();
 		}
