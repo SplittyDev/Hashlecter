@@ -6,17 +6,20 @@ Free (as in speech) md5 hash collider.
 
 ## Using Hashlecter
 ### Command-line arguments
-| Short | Long       | Type     | Description
-|-------|------------|----------|-------------
-| -i    | --input    | Argument | Read hashes from file
-| -d    | --dict     | Argument | Perform a dictionary-attack using the specified file
-| -s    | --session  | Argument | Specify a session name
-| -r    | --rounds   | Argument | Specify hashing rounds
-| -g    | --gen      | Switch   | Generate a hash
-|       | --stdin    | Switch   | Read hashes from stdin
-|       | --silent   | Switch   | Don't output anything to stdout
-|       | --wizard   | Switch   | Easy configuration
-|       | --show     | Switch   | Show results; can be combined with `-s/--session`
+| Short   | Long          | Type     | Description
+|---------|---------------|----------|-------------
+| -a      | --alphabet    | Argument | Specify the bruteforce alphabet
+| -i      | --input       | Argument | Read hashes from file
+| -d      | --dict        | Argument | Perform a dictionary-attack using the specified file
+| -s      | --session     | Argument | Specify a session name
+| -r      | --rounds      | Argument | Specify hashing rounds
+| -g      | --gen         | Switch   | Generate a hash
+| -fupper | --force-upper | Switch   | Force uppercase hashes
+|         | --incremental | Switch   | Incremental bruteforce mode
+|         | --stdin       | Switch   | Read hashes from stdin
+|         | --silent      | Switch   | Don't output anything to stdout
+|         | --wizard      | Switch   | Easy configuration
+|         | --show        | Switch   | Show results; can be combined with `-s/--session`
 
 Info:  
 The default hashing method is md5.  
