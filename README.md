@@ -13,6 +13,7 @@ Free (as in speech) md5 hash collider.
 | -d      | --dict        | Argument | Perform a dictionary-attack using the specified file
 | -s      | --session     | Argument | Specify a session name
 | -r      | --rounds      | Argument | Specify hashing rounds
+| -l      | --len         | Argument | Specify the max length of the generated string
 | -g      | --gen         | Switch   | Generate a hash
 | -fupper | --force-upper | Switch   | Force uppercase hashes
 |         | --incremental | Switch   | Incremental bruteforce mode
@@ -72,7 +73,12 @@ Cracking the md5 hash for "hello" using dictionary "dict":
 
 Cracking a list "hashes" of 2-round md5-hashed entries using dictionary "dict":
 ```
-# mono lecter.exe -d dict -i hashes -m md5_double
+# mono lecter.exe -d dict -i hashes -r 2
+```
+
+Bruteforcing the md5 hash for "hello" using incremental mode and a lowercase alphabet:
+```
+# mono lecter.exe -a l --incremental --stdin | echo 5d41402abc4b2a76b9719d911017c592
 ```
 
 ### Examples (Microsoft .Net)
@@ -83,7 +89,12 @@ Cracking the md5 hash for "hello" using dictionary "dict":
 
 Cracking a list "hashes" of 2-round md5-hashed entries using dictionary "dict":
 ```
-> lecter -d dict -i hashes -m md5_double
+> lecter -d dict -i hashes -r 2
+```
+
+Bruteforcing the md5 hash for "hello" using incremental mode and a lowercase alphabet:
+```
+> lecter -a l --incremental --stdin | echo 5d41402abc4b2a76b9719d911017c592
 ```
 
 ## Building Hashlecter
