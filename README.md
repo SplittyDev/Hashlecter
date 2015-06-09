@@ -78,7 +78,7 @@ Cracking a list "hashes" of 2-round md5-hashed entries using dictionary "dict":
 
 Bruteforcing the md5 hash for "hello" using incremental mode and a lowercase alphabet:
 ```
-# mono lecter.exe -a l --incremental --stdin | echo 5d41402abc4b2a76b9719d911017c592
+# mono lecter.exe -a $l --incremental --stdin | echo 5d41402abc4b2a76b9719d911017c592
 ```
 
 ### Examples (Microsoft .Net)
@@ -94,7 +94,7 @@ Cracking a list "hashes" of 2-round md5-hashed entries using dictionary "dict":
 
 Bruteforcing the md5 hash for "hello" using incremental mode and a lowercase alphabet:
 ```
-> lecter -a l --incremental --stdin | echo 5d41402abc4b2a76b9719d911017c592
+> lecter -a $l --incremental --stdin | echo 5d41402abc4b2a76b9719d911017c592
 ```
 
 ## Building Hashlecter
