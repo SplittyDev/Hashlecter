@@ -26,7 +26,7 @@ namespace hashlecter
 
 		#endregion
 
-		public static void Run (string[] hashes, HashingMethod method) {
+		public static void Run (string[] hashes, HashingMethod method, string alphabet, int length = 6) {
 
 			// Stopwatch for measuring time
 			var watch = Stopwatch.StartNew ();
@@ -49,7 +49,53 @@ namespace hashlecter
 
 				current_hash = hashes[i];
 
-				// TODO: Implement bruteforce
+				var index = 0;
+				var max = Convert.ToInt64 (Math.Pow (alphabet.Length, length));
+				var test = new char[length];
+
+				// Fixed length
+				for (var j = 0; j < length; j++)
+					test[j] = alphabet[0];
+
+				string output;
+				var success = method.CheckHash (current_hash, new string (test), out output);
+
+				if (success) {
+					++cracked;
+					MainClass.db.Add (MainClass.session, current_hash, output, method);
+					goto end;
+				}
+
+				// TODO: Parallelize this!
+				for (int test_index = length - 1, letter_index = 0; test_index >= 0; test_index++) {
+					
+					test[test_index] = alphabet[letter_index];
+					success = method.CheckHash (current_hash, new string (test), out output);
+
+					if (success) {
+						++cracked;
+						MainClass.db.Add (MainClass.session, current_hash, output, method);
+						goto end;
+					}
+
+					for (var z = test_index + 1; z < length; z++) {
+						
+						if (test[z] != alphabet[alphabet.Length - 1]) {
+							test_index = length;
+							goto _break;
+						}
+					}
+
+					_break:
+					if (letter_index == alphabet.Length)
+						test[test_index] = alphabet[0];
+				}
+
+				// TODO: Incremental
+
+				// End
+				end:
+
 			}
 		}
 
