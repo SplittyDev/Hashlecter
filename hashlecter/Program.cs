@@ -4,6 +4,7 @@
 #define SHA384
 #define SHA512
 #define RIPEMD160
+#define WHIRLPOOL
 #define JHASH
 
 using System;
@@ -91,6 +92,10 @@ namespace hashlecter
 
 				#if RIPEMD160
 				HashingMethod.New<hRIPEMD160> (),
+				#endif
+
+				#if WHIRLPOOL
+				HashingMethod.New<hWhirlpool> (),
 				#endif
 
 				#if JHASH

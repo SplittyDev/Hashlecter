@@ -9,6 +9,7 @@ namespace hashlecter
 		SHA384,
 		SHA512,
 		RIPEMD160,
+		Whirlpool,
 		JHash,
 	}
 }

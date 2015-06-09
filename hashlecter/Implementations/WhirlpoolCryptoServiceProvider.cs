@@ -48,25 +48,18 @@ namespace hashlecter
 
 		// Reset
 		void NESSIE_Init () {
-
-			// Reset state
+			
 			Array.Clear (hash, 0, WBLOCK_LONG);
-
-			// Reset buffer
 			Array.Clear (buffer, 0, WBLOCK_BYTES);
-
-			// Reset bitlength
 			Array.Clear (bitlength, 0, LENGTH_BYTES);
 
-			// Reset buffer_bits and buffer_pos
-			buffer_bits	= 0;
-			buffer_pos	= 0;
+			buffer_bits	= buffer_pos = 0;
 		}
 
 		void NESSIE_Add (byte[] src, int _src_pos, int _src_len) {
 
 			ulong src_bits = (ulong)_src_len * 8UL;
-			var src_pos = _src_pos;
+			int src_pos = _src_pos;
 			int src_gap = (8 - ((int)src_bits & 7)) & 7;
 
 			var buf = buffer;
@@ -80,7 +73,7 @@ namespace hashlecter
 			var bit_len = bitlength;
 
 			var value = src_bits;
-			for (i = 31, carry = 0; i >= 0 && (carry != 0 || value != 0UL); i--) {
+			for (i = 31, carry = 0; i >= 0 && (carry != 0 || value != 0); i--) {
 				carry += bit_len [i] + ((uint)value & 0xFF);
 				bit_len [i] = (byte)carry;
 				carry >>= 8;
@@ -92,8 +85,8 @@ namespace hashlecter
 
 				// Current byte
 				b = (uint)(
-					((src [src_pos + 0] << src_gap) & 0xFF) |
-					((src [src_pos + 1]             & 0xFF) >> (8 - src_gap)));
+					((src [src_pos] << src_gap) & 0xFF) |
+					((src [src_pos + 1]         & 0xFF) >> (8 - src_gap)));
 				
 				// Process byte
 				buf [buf_pos++] |= (byte)(b >> buf_rem);
@@ -105,8 +98,7 @@ namespace hashlecter
 					Process ();
 
 					// Clear buffer
-					buf_bits = 0;
-					buf_pos = 0;
+					buf_bits = buffer_pos = 0;
 				}
 
 				buf [buf_pos] = (byte)(b << (8 - buf_rem));
@@ -119,7 +111,7 @@ namespace hashlecter
 			if (src_bits > 0) {
 
 				// Current byte
-				b = (uint)(src [src_pos] << src_gap) & 0xFF;
+				b = (uint)((src [src_pos] << src_gap) & 0xFF);
 
 				// Process bits
 				buf [buf_pos] |= (byte)(b >> buf_rem);
@@ -127,7 +119,10 @@ namespace hashlecter
 				b = 0;
 
 			if ((ulong)buf_rem + src_bits < 8) {
-
+				
+				buf_bits += (int)src_bits;
+			} else {
+				
 				buf_pos++;
 				buf_bits += 8 - buf_rem;
 				src_bits -= (ulong)(8 - buf_rem);
@@ -138,8 +133,7 @@ namespace hashlecter
 					Process ();
 
 					// Clear buffer
-					buf_bits = 0;
-					buf_pos = 0;
+					buf_bits = buf_pos = 0;
 				}
 
 				buf [buf_pos] = (byte)(b << (8 - buf_rem));
@@ -218,208 +212,209 @@ namespace hashlecter
 			var state = new ulong[8];
 			var L = new ulong[8];
 			var buf = buffer;
-			var offset = 0;
+			int offset = 0;
 
 			// Create block from buffer
-			for (i = 0; i < 8; i++, offset += 8)
+			for (i = 0; i < 8; i++, offset += 8) {
 				block [i] =
-					((ulong)buf [offset + 0])          << 56 ^
-					((ulong)buf [offset + 1] & 0xFFUL) << 48 ^
-					((ulong)buf [offset + 2] & 0xFFUL) << 40 ^
-					((ulong)buf [offset + 3] & 0xFFUL) << 32 ^
-					((ulong)buf [offset + 4] & 0xFFUL) << 24 ^
-					((ulong)buf [offset + 5] & 0xFFUL) << 16 ^
-					((ulong)buf [offset + 6] & 0xFFUL) << 8 ^
-					((ulong)buf [offset + 7] & 0xFFUL);
+					(((ulong)buf [offset + 0])         << 56) ^
+					(((ulong)buf [offset + 1] & 0xFFL) << 48) ^
+					(((ulong)buf [offset + 2] & 0xFFL) << 40) ^
+					(((ulong)buf [offset + 3] & 0xFFL) << 32) ^
+					(((ulong)buf [offset + 4] & 0xFFL) << 24) ^
+					(((ulong)buf [offset + 5] & 0xFFL) << 16) ^
+					(((ulong)buf [offset + 6] & 0xFFL) << 8 ) ^
+					(((ulong)buf [offset + 7] & 0xFFL));
+			}
 
 			// Compute and apply K^0
-			for (var j = 0; j < 8; j++)
-				state [j] = block [j] ^ (K [j] = hash [j]);
+			for (var x = 0; x < 8; x++)
+				state [x] = block [x] ^ (K [x] = this.hash [x]);
 
 			// Iterate over all rounds
 			for (r = 1; r <= R; r++) {
 
 				// K^r = K^{r-1}
 				L [0] =
-					C0 [(K [0] >> 56)       ] ^
-					C1 [(K [7] >> 48) & 0xFF] ^
-					C2 [(K [6] >> 40) & 0xFF] ^
-					C3 [(K [5] >> 32) & 0xFF] ^
-					C4 [(K [4] >> 24) & 0xFF] ^
-					C5 [(K [3] >> 16) & 0xFF] ^
-					C6 [(K [2] >> 8 ) & 0xFF] ^
-					C7 [(K [1])       & 0xFF] ^
+					C0 [(int)(K [0] >> 56)       ] ^
+					C1 [(int)(K [7] >> 48) & 0xFF] ^
+					C2 [(int)(K [6] >> 40) & 0xFF] ^
+					C3 [(int)(K [5] >> 32) & 0xFF] ^
+					C4 [(int)(K [4] >> 24) & 0xFF] ^
+					C5 [(int)(K [3] >> 16) & 0xFF] ^
+					C6 [(int)(K [2] >> 8 ) & 0xFF] ^
+					C7 [(int)(K [1])       & 0xFF] ^
 					RC [r];
 
 				L [1] =
-					C0 [(K [1] >> 56)       ] ^
-					C1 [(K [0] >> 48) & 0xFF] ^
-					C2 [(K [7] >> 40) & 0xFF] ^
-					C3 [(K [6] >> 32) & 0xFF] ^
-					C4 [(K [5] >> 24) & 0xFF] ^
-					C5 [(K [4] >> 16) & 0xFF] ^
-					C6 [(K [3] >> 8 ) & 0xFF] ^
-					C7 [(K [2])       & 0xFF];
+					C0 [(int)(K [1] >> 56)       ] ^
+					C1 [(int)(K [0] >> 48) & 0xFF] ^
+					C2 [(int)(K [7] >> 40) & 0xFF] ^
+					C3 [(int)(K [6] >> 32) & 0xFF] ^
+					C4 [(int)(K [5] >> 24) & 0xFF] ^
+					C5 [(int)(K [4] >> 16) & 0xFF] ^
+					C6 [(int)(K [3] >> 8 ) & 0xFF] ^
+					C7 [(int)(K [2])       & 0xFF];
 
 				L [2] =
-					C0 [(K [2] >> 56)       ] ^
-					C1 [(K [1] >> 48) & 0xFF] ^
-					C2 [(K [0] >> 40) & 0xFF] ^
-					C3 [(K [7] >> 32) & 0xFF] ^
-					C4 [(K [6] >> 24) & 0xFF] ^
-					C5 [(K [5] >> 16) & 0xFF] ^
-					C6 [(K [4] >> 8 ) & 0xFF] ^
-					C7 [(K [3])       & 0xFF];
+					C0 [(int)(K [2] >> 56)       ] ^
+					C1 [(int)(K [1] >> 48) & 0xFF] ^
+					C2 [(int)(K [0] >> 40) & 0xFF] ^
+					C3 [(int)(K [7] >> 32) & 0xFF] ^
+					C4 [(int)(K [6] >> 24) & 0xFF] ^
+					C5 [(int)(K [5] >> 16) & 0xFF] ^
+					C6 [(int)(K [4] >> 8 ) & 0xFF] ^
+					C7 [(int)(K [3])       & 0xFF];
 
 				L [3] =
-					C0 [(K [3] >> 56)       ] ^
-					C1 [(K [2] >> 48) & 0xFF] ^
-					C2 [(K [1] >> 40) & 0xFF] ^
-					C3 [(K [0] >> 32) & 0xFF] ^
-					C4 [(K [7] >> 24) & 0xFF] ^
-					C5 [(K [6] >> 16) & 0xFF] ^
-					C6 [(K [5] >> 8 ) & 0xFF] ^
-					C7 [(K [4])       & 0xFF];
+					C0 [(int)(K [3] >> 56)       ] ^
+					C1 [(int)(K [2] >> 48) & 0xFF] ^
+					C2 [(int)(K [1] >> 40) & 0xFF] ^
+					C3 [(int)(K [0] >> 32) & 0xFF] ^
+					C4 [(int)(K [7] >> 24) & 0xFF] ^
+					C5 [(int)(K [6] >> 16) & 0xFF] ^
+					C6 [(int)(K [5] >> 8 ) & 0xFF] ^
+					C7 [(int)(K [4])       & 0xFF];
 
 				L [4] =
-					C0 [(K [4] >> 56)       ] ^
-					C1 [(K [3] >> 48) & 0xFF] ^
-					C2 [(K [2] >> 40) & 0xFF] ^
-					C3 [(K [1] >> 32) & 0xFF] ^
-					C4 [(K [0] >> 24) & 0xFF] ^
-					C5 [(K [7] >> 16) & 0xFF] ^
-					C6 [(K [6] >> 8 ) & 0xFF] ^
-					C7 [(K [5])       & 0xFF];
+					C0 [(int)(K [4] >> 56)       ] ^
+					C1 [(int)(K [3] >> 48) & 0xFF] ^
+					C2 [(int)(K [2] >> 40) & 0xFF] ^
+					C3 [(int)(K [1] >> 32) & 0xFF] ^
+					C4 [(int)(K [0] >> 24) & 0xFF] ^
+					C5 [(int)(K [7] >> 16) & 0xFF] ^
+					C6 [(int)(K [6] >> 8 ) & 0xFF] ^
+					C7 [(int)(K [5])       & 0xFF];
 
 				L [5] =
-					C0 [(K [5] >> 56)       ] ^
-					C1 [(K [4] >> 48) & 0xFF] ^
-					C2 [(K [3] >> 40) & 0xFF] ^
-					C3 [(K [2] >> 32) & 0xFF] ^
-					C4 [(K [1] >> 24) & 0xFF] ^
-					C5 [(K [0] >> 16) & 0xFF] ^
-					C6 [(K [7] >> 8 ) & 0xFF] ^
-					C7 [(K [6])       & 0xFF];
+					C0 [(int)(K [5] >> 56)       ] ^
+					C1 [(int)(K [4] >> 48) & 0xFF] ^
+					C2 [(int)(K [3] >> 40) & 0xFF] ^
+					C3 [(int)(K [2] >> 32) & 0xFF] ^
+					C4 [(int)(K [1] >> 24) & 0xFF] ^
+					C5 [(int)(K [0] >> 16) & 0xFF] ^
+					C6 [(int)(K [7] >> 8 ) & 0xFF] ^
+					C7 [(int)(K [6])       & 0xFF];
 
 				L [6] =
-					C0 [(K [6] >> 56)       ] ^
-					C1 [(K [5] >> 48) & 0xFF] ^
-					C2 [(K [4] >> 40) & 0xFF] ^
-					C3 [(K [3] >> 32) & 0xFF] ^
-					C4 [(K [2] >> 24) & 0xFF] ^
-					C5 [(K [1] >> 16) & 0xFF] ^
-					C6 [(K [0] >> 8 ) & 0xFF] ^
-					C7 [(K [7])       & 0xFF];
+					C0 [(int)(K [6] >> 56)       ] ^
+					C1 [(int)(K [5] >> 48) & 0xFF] ^
+					C2 [(int)(K [4] >> 40) & 0xFF] ^
+					C3 [(int)(K [3] >> 32) & 0xFF] ^
+					C4 [(int)(K [2] >> 24) & 0xFF] ^
+					C5 [(int)(K [1] >> 16) & 0xFF] ^
+					C6 [(int)(K [0] >> 8 ) & 0xFF] ^
+					C7 [(int)(K [7])       & 0xFF];
 
 				L [7] =
-					C0 [(K [7] >> 56)] ^
-					C1 [(K [6] >> 48) & 0xFF] ^
-					C2 [(K [5] >> 40) & 0xFF] ^
-					C3 [(K [4] >> 32) & 0xFF] ^
-					C4 [(K [3] >> 24) & 0xFF] ^
-					C5 [(K [2] >> 16) & 0xFF] ^
-					C6 [(K [1] >> 8 ) & 0xFF] ^
-					C7 [(K [0])       & 0xFF];
+					C0 [(int)(K [7] >> 56)] ^
+					C1 [(int)(K [6] >> 48) & 0xFF] ^
+					C2 [(int)(K [5] >> 40) & 0xFF] ^
+					C3 [(int)(K [4] >> 32) & 0xFF] ^
+					C4 [(int)(K [3] >> 24) & 0xFF] ^
+					C5 [(int)(K [2] >> 16) & 0xFF] ^
+					C6 [(int)(K [1] >> 8 ) & 0xFF] ^
+					C7 [(int)(K [0])       & 0xFF];
 
 				for (var x = 0; x < 8; x++)
 					K [x] = L [x];
 
 				// r-th round transformation
 				L [0] =
-					C0 [(state [0] >> 56)       ] ^
-					C1 [(state [7] >> 48) & 0xFF] ^
-					C2 [(state [6] >> 40) & 0xFF] ^
-					C3 [(state [5] >> 32) & 0xFF] ^
-					C4 [(state [4] >> 24) & 0xFF] ^
-					C5 [(state [3] >> 16) & 0xFF] ^
-					C6 [(state [2] >> 8 ) & 0xFF] ^
-					C7 [(state [1])       & 0xFF] ^
+					C0 [(int)(state [0] >> 56)       ] ^
+					C1 [(int)(state [7] >> 48) & 0xFF] ^
+					C2 [(int)(state [6] >> 40) & 0xFF] ^
+					C3 [(int)(state [5] >> 32) & 0xFF] ^
+					C4 [(int)(state [4] >> 24) & 0xFF] ^
+					C5 [(int)(state [3] >> 16) & 0xFF] ^
+					C6 [(int)(state [2] >> 8 ) & 0xFF] ^
+					C7 [(int)(state [1])       & 0xFF] ^
 					K  [0];
 
 				L [1] =
-					C0 [(state [1] >> 56)       ] ^
-					C1 [(state [0] >> 48) & 0xFF] ^
-					C2 [(state [7] >> 40) & 0xFF] ^
-					C3 [(state [6] >> 32) & 0xFF] ^
-					C4 [(state [5] >> 24) & 0xFF] ^
-					C5 [(state [4] >> 16) & 0xFF] ^
-					C6 [(state [3] >> 8 ) & 0xFF] ^
-					C7 [(state [2])       & 0xFF] ^
+					C0 [(int)(state [1] >> 56)       ] ^
+					C1 [(int)(state [0] >> 48) & 0xFF] ^
+					C2 [(int)(state [7] >> 40) & 0xFF] ^
+					C3 [(int)(state [6] >> 32) & 0xFF] ^
+					C4 [(int)(state [5] >> 24) & 0xFF] ^
+					C5 [(int)(state [4] >> 16) & 0xFF] ^
+					C6 [(int)(state [3] >> 8 ) & 0xFF] ^
+					C7 [(int)(state [2])       & 0xFF] ^
 					K  [1];
 
 				L [2] =
-					C0 [(state [2] >> 56)       ] ^
-					C1 [(state [1] >> 48) & 0xFF] ^
-					C2 [(state [0] >> 40) & 0xFF] ^
-					C3 [(state [7] >> 32) & 0xFF] ^
-					C4 [(state [6] >> 24) & 0xFF] ^
-					C5 [(state [5] >> 16) & 0xFF] ^
-					C6 [(state [4] >> 8 ) & 0xFF] ^
-					C7 [(state [3])       & 0xFF] ^
+					C0 [(int)(state [2] >> 56)       ] ^
+					C1 [(int)(state [1] >> 48) & 0xFF] ^
+					C2 [(int)(state [0] >> 40) & 0xFF] ^
+					C3 [(int)(state [7] >> 32) & 0xFF] ^
+					C4 [(int)(state [6] >> 24) & 0xFF] ^
+					C5 [(int)(state [5] >> 16) & 0xFF] ^
+					C6 [(int)(state [4] >> 8 ) & 0xFF] ^
+					C7 [(int)(state [3])       & 0xFF] ^
 					K  [2];
 
 				L [3] =
-					C0 [(state [3] >> 56)       ] ^
-					C1 [(state [2] >> 48) & 0xFF] ^
-					C2 [(state [1] >> 40) & 0xFF] ^
-					C3 [(state [0] >> 32) & 0xFF] ^
-					C4 [(state [7] >> 24) & 0xFF] ^
-					C5 [(state [6] >> 16) & 0xFF] ^
-					C6 [(state [5] >> 8 ) & 0xFF] ^
-					C7 [(state [4])       & 0xFF] ^
+					C0 [(int)(state [3] >> 56)       ] ^
+					C1 [(int)(state [2] >> 48) & 0xFF] ^
+					C2 [(int)(state [1] >> 40) & 0xFF] ^
+					C3 [(int)(state [0] >> 32) & 0xFF] ^
+					C4 [(int)(state [7] >> 24) & 0xFF] ^
+					C5 [(int)(state [6] >> 16) & 0xFF] ^
+					C6 [(int)(state [5] >> 8 ) & 0xFF] ^
+					C7 [(int)(state [4])       & 0xFF] ^
 					K  [3];
 
 				L [4] =
-					C0 [(state [4] >> 56)       ] ^
-					C1 [(state [3] >> 48) & 0xFF] ^
-					C2 [(state [2] >> 40) & 0xFF] ^
-					C3 [(state [1] >> 32) & 0xFF] ^
-					C4 [(state [0] >> 24) & 0xFF] ^
-					C5 [(state [7] >> 16) & 0xFF] ^
-					C6 [(state [6] >> 8 ) & 0xFF] ^
-					C7 [(state [5])       & 0xFF] ^
+					C0 [(int)(state [4] >> 56)       ] ^
+					C1 [(int)(state [3] >> 48) & 0xFF] ^
+					C2 [(int)(state [2] >> 40) & 0xFF] ^
+					C3 [(int)(state [1] >> 32) & 0xFF] ^
+					C4 [(int)(state [0] >> 24) & 0xFF] ^
+					C5 [(int)(state [7] >> 16) & 0xFF] ^
+					C6 [(int)(state [6] >> 8 ) & 0xFF] ^
+					C7 [(int)(state [5])       & 0xFF] ^
 					K  [4];
 
 				L [5] =
-					C0 [(state [5] >> 56)       ] ^
-					C1 [(state [4] >> 48) & 0xFF] ^
-					C2 [(state [3] >> 40) & 0xFF] ^
-					C3 [(state [2] >> 32) & 0xFF] ^
-					C4 [(state [1] >> 24) & 0xFF] ^
-					C5 [(state [0] >> 16) & 0xFF] ^
-					C6 [(state [7] >> 8 ) & 0xFF] ^
-					C7 [(state [6])       & 0xFF] ^
+					C0 [(int)(state [5] >> 56)       ] ^
+					C1 [(int)(state [4] >> 48) & 0xFF] ^
+					C2 [(int)(state [3] >> 40) & 0xFF] ^
+					C3 [(int)(state [2] >> 32) & 0xFF] ^
+					C4 [(int)(state [1] >> 24) & 0xFF] ^
+					C5 [(int)(state [0] >> 16) & 0xFF] ^
+					C6 [(int)(state [7] >> 8 ) & 0xFF] ^
+					C7 [(int)(state [6])       & 0xFF] ^
 					K  [5];
 
 				L [6] =
-					C0 [(state [6] >> 56)       ] ^
-					C1 [(state [5] >> 48) & 0xFF] ^
-					C2 [(state [4] >> 40) & 0xFF] ^
-					C3 [(state [3] >> 32) & 0xFF] ^
-					C4 [(state [2] >> 24) & 0xFF] ^
-					C5 [(state [1] >> 16) & 0xFF] ^
-					C6 [(state [0] >> 8 ) & 0xFF] ^
-					C7 [(state [7])       & 0xFF] ^
+					C0 [(int)(state [6] >> 56)       ] ^
+					C1 [(int)(state [5] >> 48) & 0xFF] ^
+					C2 [(int)(state [4] >> 40) & 0xFF] ^
+					C3 [(int)(state [3] >> 32) & 0xFF] ^
+					C4 [(int)(state [2] >> 24) & 0xFF] ^
+					C5 [(int)(state [1] >> 16) & 0xFF] ^
+					C6 [(int)(state [0] >> 8 ) & 0xFF] ^
+					C7 [(int)(state [7])       & 0xFF] ^
 					K  [6];
 
 				L [7] =
-					C0 [(state [7] >> 56)       ] ^
-					C1 [(state [6] >> 48) & 0xFF] ^
-					C2 [(state [5] >> 40) & 0xFF] ^
-					C3 [(state [4] >> 32) & 0xFF] ^
-					C4 [(state [3] >> 24) & 0xFF] ^
-					C5 [(state [2] >> 16) & 0xFF] ^
-					C6 [(state [1] >> 8 ) & 0xFF] ^
-					C7 [(state [0])       & 0xFF] ^
+					C0 [(int)(state [7] >> 56)       ] ^
+					C1 [(int)(state [6] >> 48) & 0xFF] ^
+					C2 [(int)(state [5] >> 40) & 0xFF] ^
+					C3 [(int)(state [4] >> 32) & 0xFF] ^
+					C4 [(int)(state [3] >> 24) & 0xFF] ^
+					C5 [(int)(state [2] >> 16) & 0xFF] ^
+					C6 [(int)(state [1] >> 8 ) & 0xFF] ^
+					C7 [(int)(state [0])       & 0xFF] ^
 					K  [7];
 
 				for (var x = 0; x < 8; x++)
 					state [x] = L [x];
-
-				// Miyaguchi-Preneel function
-				for (var x = 0; x < 8; x++)
-					hash [x] ^= state [x] ^ block [x];
 			}
+
+			// Miyaguchi-Preneel function
+			for (var x = 0; x < 8; x++)
+				this.hash [x] ^= state [x] ^ block [x];
 		}
 
 		#endregion
