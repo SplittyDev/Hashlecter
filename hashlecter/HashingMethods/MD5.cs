@@ -25,7 +25,7 @@ namespace hashlecter
 				hash = hasher.ComputeHash (bytes);
 			}
 
-			return hash.ToHex ().ToLowerInvariant ();
+			return hash.ToHex ();
 		}
 	}
 

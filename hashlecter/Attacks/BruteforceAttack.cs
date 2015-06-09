@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace hashlecter
 {
@@ -9,18 +11,19 @@ namespace hashlecter
 	{
 		#region Constants
 
-		const string NUMERIC			= "0123456789";
-		const string LOWER_ALPHANUMERIC	= "abcdefghijklmnopqrstuvxzyz";
-		const string UPPER_ALPHANUMERIC	= "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		const string SPECIAL_BASIC		= "!?-$+";
-		const string SPECIAL_ADVANCED	= ".,:;_#&~*'/\\\"%(){}[]^<>|";
+		public const string NUMERIC				= "0123456789";
+		public const string LOWER_ALPHANUMERIC	= "abcdefghijklmnopqrstuvxzyz";
+		public const string UPPER_ALPHANUMERIC	= "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		public const string SPECIAL_BASIC		= "!?-$+";
+		public const string SPECIAL_ADVANCED	= ".,:;_#&~*'/\\\"%(){}[]^<>|";
 
 		#endregion
 
 		#region Static Fields
 
 		static volatile int avg, avg_tmp, max;
-		static volatile int processed, generated, cracked;
+		static volatile int generated, cracked;
+		static double bruteforce_max;
 		static string current_str, current_hash;
 		static bool done;
 
@@ -40,62 +43,108 @@ namespace hashlecter
 				var update_avg = Task.Factory.StartNew (Update_Stats);
 			}
 
-			// Iterate over all hashes
-			for (var i = 0; i < hashes.Length; i++) {
+			string output;
+			var alphabet_first = alphabet.First ();
+			var alphabet_last = alphabet.Last ();
+
+			for (var ihash = 0; ihash < hashes.Length; ihash++) {
 
 				// Skip comments
-				if (hashes[i].StartsWith ("#"))
+				if (hashes [ihash].StartsWith ("#"))
 					continue;
 
-				current_hash = hashes[i];
+				current_hash = hashes [ihash];
 
-				var index = 0;
-				var max = Convert.ToInt64 (Math.Pow (alphabet.Length, length));
-				var test = new char[length];
+				// Incremental bruteforce
+				if (MainClass.options.incremental) {
 
-				// Fixed length
-				for (var j = 0; j < length; j++)
-					test[j] = alphabet[0];
+					// Calculate maximum
+					for (var i = 1; i <= length; i++)
+						bruteforce_max += Math.Pow (i, alphabet.Length);
 
-				string output;
-				var success = method.CheckHash (current_hash, new string (test), out output);
+					for (var curlen = 1; curlen <= length; ++curlen) {
 
-				if (success) {
-					++cracked;
-					MainClass.db.Add (MainClass.session, current_hash, output, method);
-					goto end;
-				}
+						// Initialize buffer
+						var accum = new StringBuilder (new String (alphabet_first, curlen));
 
-				// TODO: Parallelize this!
-				for (int test_index = length - 1, letter_index = 0; test_index >= 0; test_index++) {
-					
-					test[test_index] = alphabet[letter_index];
-					success = method.CheckHash (current_hash, new string (test), out output);
-
-					if (success) {
-						++cracked;
-						MainClass.db.Add (MainClass.session, current_hash, output, method);
-						goto end;
-					}
-
-					for (var z = test_index + 1; z < length; z++) {
+						while (true) {
 						
-						if (test[z] != alphabet[alphabet.Length - 1]) {
-							test_index = length;
-							goto _break;
+							++generated;
+							++avg_tmp;
+							var value = accum.ToString ();
+							current_str = value;
+
+							var success = method.CheckHash (current_hash, value, out output);
+							if (success) {
+								++cracked;
+								MainClass.db.Add (MainClass.session, current_hash, value, method);
+								done = true;
+								goto end;
+							}
+
+							if (value.All (val => val == alphabet_last))
+								break;
+
+							// TODO: Parallelize this
+							for (var i = curlen - 1; i >= 0; --i) {
+								if (accum [i] != alphabet_last) {
+									accum [i] = alphabet [alphabet.IndexOf (accum [i]) + 1];
+									break;
+								} else
+									accum [i] = alphabet_first;
+							}
 						}
 					}
-
-					_break:
-					if (letter_index == alphabet.Length)
-						test[test_index] = alphabet[0];
 				}
 
-				// TODO: Incremental
+			// Fixed-length bruteforce
+			else {
 
-				// End
-				end:
+					// Calculated maximum
+					bruteforce_max = Math.Pow (length, alphabet.Length);
 
+					// Initialize buffer
+					var accum = new StringBuilder (new String (alphabet_first, length));
+
+					while (true) {
+
+						++generated;
+						++avg_tmp;
+						var value = accum.ToString ();
+						current_str = value;
+
+						var success = method.CheckHash (current_hash, value, out output);
+						if (success) {
+							++cracked;
+							MainClass.db.Add (MainClass.session, current_hash, value, method);
+							done = true;
+							goto end;
+						}
+
+						if (value.All (val => val == alphabet_last))
+							break;
+
+						// TODO: Parallelize this
+						for (var i = length - 1; i >= 0; --i) {
+							if (accum [i] != alphabet_last) {
+								accum [i] = alphabet [alphabet.IndexOf (accum [i]) + 1];
+								break;
+							} else
+								accum [i] = alphabet_first;
+						}
+					}
+				}
+
+				end: {}
+			}
+
+
+			watch.Stop ();
+
+			// Display the correct stats after exiting
+			if (!MainClass.options.silent) {
+
+				Update_Screen (watch, force: true);
 			}
 		}
 
@@ -109,18 +158,17 @@ namespace hashlecter
 				Console.WriteLine ("[Basic]");
 				Console.WriteLine ("Speed  : {0} hash/s", avg == 0 ? "N/A" : avg.ToString ());
 				Console.WriteLine ("Max    : {0} hash/s", max == 0 ? "N/A" : max.ToString ());
-				Console.WriteLine ("Total  : {0} hashes", processed);
+				Console.WriteLine ("Total  : {0} hashes", generated);
 				Console.WriteLine ("Cracked: {0} cracked.", cracked);
 				Console.WriteLine ("Hash   : {0}", current_hash);
 				Console.WriteLine ();
 
-				// Dictionary
-				if (!string.IsNullOrEmpty (MainClass.options.input_dict)) {
-					Console.WriteLine ("[Bruteforce]");
-					Console.WriteLine ("Generated: {0}", generated);
-					Console.WriteLine ("Current  : {0}", current_str);
-					Console.WriteLine ();
-				}
+				// Bruteforce
+				Console.WriteLine ("[Bruteforce]");
+				Console.WriteLine ("Max      : {0}", bruteforce_max);
+				Console.WriteLine ("Generated: {0}", generated);
+				Console.WriteLine ("Current  : {0}", current_str);
+				Console.WriteLine ();
 
 				// Database
 				Console.WriteLine ("[Database]");

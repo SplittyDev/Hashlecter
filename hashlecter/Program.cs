@@ -105,7 +105,6 @@ namespace hashlecter
 				PreHelp ();
 				ArgumentParser.Help ();
 				Help ();
-				PostHelp ();
 				Environment.Exit (0);
 			}
 
@@ -144,7 +143,7 @@ namespace hashlecter
 				if (!string.IsNullOrEmpty (options.input_file))
 					Console.WriteLine (method.Hash (options.input_file));
 				
-				// Hash an empty string of no string is given
+				// Hash an empty string if no string is given
 				else
 					Console.WriteLine (method.Hash (string.Empty));
 
@@ -181,7 +180,22 @@ namespace hashlecter
 			}
 
 			// Perform bruteforce attack
-			// TODO: Add bruteforce attack
+			{
+				// Null-check the input file
+				if (input_hashes == null) {
+					Console.Error.WriteLine ("No input was specified.");
+					Environment.Exit (0);
+				}
+
+				string default_alphabet =
+					BruteforceAttack.NUMERIC +
+					BruteforceAttack.LOWER_ALPHANUMERIC;
+
+				if (!string.IsNullOrEmpty (options.alphabet))
+					BruteforceAttack.Run (input_hashes, method, options.alphabet, 5);
+				else
+					BruteforceAttack.Run (input_hashes, method, default_alphabet, 5);
+			}
 
 			if (!options.silent) {
 				db.Show (session);
@@ -245,25 +259,12 @@ namespace hashlecter
 		/// Shows the help text
 		/// </summary>
 		public static void Help () {
-			Console.WriteLine ("Verbosity:");
-			Console.WriteLine ("silent              Print nothing");
-			Console.WriteLine ("low                 Print only important messages");
-			Console.WriteLine ("high                Print everything");
 			Console.WriteLine ("\nHashing methods:");
 			foreach (var method in methods) {
 				var name = method.Name.PadRight (20, ' ');
 				Console.WriteLine (string.Format ("{0}{1}", name, method.Format));
 			}
 			Console.WriteLine ();
-		}
-
-		/// <summary>
-		/// Shows the text after the help text
-		/// </summary>
-		public static void PostHelp () {
-			Console.WriteLine ("Examples:");
-			Console.WriteLine ("MD5 bruteforce attack: lecter -m md5 -i hash.txt");
-			Console.WriteLine ("MyBB dictionary attack: lecter -m md5_mybb -i hash.txt --dict dictionary.txt");
 		}
 
 		#endregion
@@ -332,6 +333,10 @@ namespace hashlecter
 			Console.Read ();
 		}
 
+		/// <summary>
+		/// Reads a path.
+		/// </summary>
+		/// <returns>The path.</returns>
 		public static string ReadSilent () {
 			var key = Console.ReadKey (true);
 			var accum = new StringBuilder ();

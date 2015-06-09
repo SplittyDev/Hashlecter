@@ -5,6 +5,7 @@ namespace hashlecter
 {
 	public class Options
 	{
+		// a: alphabet
 		// d: dict
 		// g: generate
 		// i: input
@@ -66,6 +67,18 @@ namespace hashlecter
 		[Switch ("g", "gen")]
 		[Docs ("Generate hash")]
 		public bool gen;
+
+		[Switch ("fupper", "force-upper")]
+		[Docs ("Force uppercase hashes")]
+		public bool force_upper;
+
+		[Switch]
+		[Docs ("Incremental bruteforce")]
+		public bool incremental;
+
+		[Argument ("a", "alphabet")]
+		[Docs ("Bruteforce alphabet")]
+		public string alphabet;
 
 		#endregion
 

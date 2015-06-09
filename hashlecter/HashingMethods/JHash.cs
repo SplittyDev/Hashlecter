@@ -17,7 +17,7 @@ namespace hashlecter
 
 			hash = JHashCryptoServiceProvider.ComputeHash (bytes);
 
-			return hash.ToHex ().ToLowerInvariant ();
+			return hash.ToHex ();
 		}
 	}
 
