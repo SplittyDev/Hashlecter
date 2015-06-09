@@ -191,10 +191,24 @@ namespace hashlecter
 					BruteforceAttack.NUMERIC +
 					BruteforceAttack.LOWER_ALPHANUMERIC;
 
-				if (!string.IsNullOrEmpty (options.alphabet))
-					BruteforceAttack.Run (input_hashes, method, options.alphabet, 5);
-				else
-					BruteforceAttack.Run (input_hashes, method, default_alphabet, 5);
+				if (options.len == 0)
+					options.len = 6;
+
+				if (!string.IsNullOrEmpty (options.alphabet)) {
+
+					// Build alphabet
+					options.alphabet = options.alphabet
+						.Replace ("$$", "\0")
+						.Replace ("$n", BruteforceAttack.NUMERIC)
+						.Replace ("$l", BruteforceAttack.LOWER_ALPHANUMERIC)
+						.Replace ("$u", BruteforceAttack.UPPER_ALPHANUMERIC)
+						.Replace ("$s+", BruteforceAttack.SPECIAL_ADVANCED)
+						.Replace ("$s",	BruteforceAttack.SPECIAL_BASIC)
+						.Replace ("\0", "$");
+				} else
+					options.alphabet = default_alphabet;
+
+				BruteforceAttack.Run (input_hashes, method, options.alphabet, options.len);
 			}
 
 			if (!options.silent) {

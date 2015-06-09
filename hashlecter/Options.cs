@@ -9,6 +9,7 @@ namespace hashlecter
 		// d: dict
 		// g: generate
 		// i: input
+		// l: length
 		// m: method
 		// s: session
 		// r: round
@@ -67,6 +68,10 @@ namespace hashlecter
 		[Switch ("g", "gen")]
 		[Docs ("Generate hash")]
 		public bool gen;
+
+		[Argument ("l", "len")]
+		[Docs ("Maximum string length to be generated")]
+		public int len;
 
 		[Switch ("fupper", "force-upper")]
 		[Docs ("Force uppercase hashes")]
