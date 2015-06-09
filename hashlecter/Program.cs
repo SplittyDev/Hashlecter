@@ -1,6 +1,9 @@
-﻿#define MD5_COMPLETE
-#define SHA_COMPLETE
-#define EXP_COMPLETE
+﻿#define MD5
+#define SHA1
+#define SHA256
+#define SHA384
+#define SHA512
+#define JHASH
 
 using System;
 using System.Collections.Generic;
@@ -60,24 +63,32 @@ namespace hashlecter
 			// Create a hashset for storing the hashing methods
 			methods = new HashSet<HashingMethod> {
 				
-				#if MD5_COMPLETE
+				#if MD5
 				HashingMethod.New<hMD5> (),
 				HashingMethod.New<hMD5_Double> (),
 				HashingMethod.New<hMD5_Salted> (),
 				HashingMethod.New<hMD5_MyBB> (),
 				#endif
 
-				#if SHA_COMPLETE || SHA1_COMPLETE
+				#if SHA1
 				HashingMethod.New<hSHA1> (),
 				HashingMethod.New<hSHA1_Double> (),
 				#endif
 
-				#if SHA_COMPLETE || SHA256_COMPLETE
+				#if SHA256
 				HashingMethod.New<hSHA256> (),
 				HashingMethod.New<hSHA256_Double> (),
 				#endif
 
-				#if EXP_COMPLETE
+				#if SHA384
+				HashingMethod.New<hSHA384> (),
+				#endif
+
+				#if SHA512
+				HashingMethod.New<hSHA512> (),
+				#endif
+
+				#if JHASH
 				HashingMethod.New<hJHash> (),
 				#endif
 			};
