@@ -3,6 +3,7 @@
 #define SHA256
 #define SHA384
 #define SHA512
+#define RIPEMD160
 #define JHASH
 
 using System;
@@ -86,6 +87,10 @@ namespace hashlecter
 
 				#if SHA512
 				HashingMethod.New<hSHA512> (),
+				#endif
+
+				#if RIPEMD160
+				HashingMethod.New<hRIPEMD160> (),
 				#endif
 
 				#if JHASH
