@@ -1,4 +1,5 @@
-﻿#define MD5
+﻿// Hashes
+#define MD5
 #define SHA1
 #define SHA256
 #define SHA384
@@ -16,6 +17,10 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
+#if LIBNOTIFYNET
+using libnotify.net;
+#endif
 
 using Codeaddicts.libArgument;
 
@@ -61,6 +66,10 @@ namespace hashlecter
 		/// </summary>
 		/// <param name="args">The command-line arguments.</param>
 		public static void Main (string[] args) {
+
+			foreach (var x in args) {
+				Console.WriteLine (x);
+			}
 			
 			// Create a hashset for storing the hashing methods
 			methods = new HashSet<HashingMethod> {
@@ -69,6 +78,7 @@ namespace hashlecter
 				HashingMethod.New<hMD5> (),
 				HashingMethod.New<hMD5_Double> (),
 				HashingMethod.New<hMD5_Salted> (),
+				HashingMethod.New<hMD5_Salted2> (),
 				HashingMethod.New<hMD5_MyBB> (),
 				#endif
 
@@ -201,7 +211,7 @@ namespace hashlecter
 			}
 
 			// Perform bruteforce attack
-			{
+			else {
 				// Null-check the input file
 				if (input_hashes == null) {
 					Console.Error.WriteLine ("No input was specified.");
@@ -218,14 +228,16 @@ namespace hashlecter
 				if (!string.IsNullOrEmpty (options.alphabet)) {
 
 					// Build alphabet
-					options.alphabet = options.alphabet
+					var alphabet = options.alphabet
 						.Replace ("$$", "\0")
 						.Replace ("$n", BruteforceAttack.NUMERIC)
 						.Replace ("$l", BruteforceAttack.LOWER_ALPHANUMERIC)
 						.Replace ("$u", BruteforceAttack.UPPER_ALPHANUMERIC)
 						.Replace ("$s+", BruteforceAttack.SPECIAL_ADVANCED)
 						.Replace ("$s",	BruteforceAttack.SPECIAL_BASIC)
-						.Replace ("\0", "$");
+						.Replace ("\0", "$")
+						.ToList ();
+					options.alphabet = new string (alphabet.ToArray ());
 				} else
 					options.alphabet = default_alphabet;
 
@@ -238,6 +250,12 @@ namespace hashlecter
 				if (options.wizard)
 					Console.Read ();
 			}
+
+			#if LIBNOTIFYNET
+			Task.Factory.StartNew (() => {
+				NotificationManager.Instance.ShutdownWait ();
+			}).Wait (7500);
+			#endif
 		}
 
 		/// <summary>

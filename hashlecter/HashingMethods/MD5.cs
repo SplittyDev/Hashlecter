@@ -107,6 +107,33 @@ namespace hashlecter
 		#endregion
 	}
 
+	public class hMD5_Salted2 : HashingMethod
+	{
+		#region implemented abstract members of HashingMethod
+
+		public override HashDelegate Hash { get { return HashingMethod.MD5; } }
+		public override HashingAlgorithm Algorithm { get { return HashingAlgorithm.MD5; } }
+		public override string Name { get { return "md5_salted2"; } }
+		public override string FriendlyName { get { return "Simple Salted MD5"; } }
+		public override string Format { get { return "md5($s.$p)"; } }
+
+		public override bool CheckHash (string refhash, string input, out string output) {
+			output = string.Empty;
+			if (input == null || refhash == null)
+				return false;
+			var parts = refhash.Split (':');
+			var realref = parts[0];
+			var s = parts[1];
+			var hash = MD5 (s + input);
+			var success = realref == hash;
+			if (success)
+				output = input;
+			return success;
+		}
+
+		#endregion
+	}
+
 	public class hMD5_MyBB : HashingMethod
 	{
 		#region implemented abstract members of HashingMethod

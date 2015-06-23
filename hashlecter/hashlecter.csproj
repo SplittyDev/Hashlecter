@@ -29,6 +29,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyName>lecter</AssemblyName>
+    <DefineConstants>LIBNOTIFYNET</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <Optimize>true</Optimize>
@@ -37,6 +38,7 @@
     <AssemblyName>lecter64</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>LIBNOTIFYNET</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
@@ -44,6 +46,7 @@
     <WarningLevel>4</WarningLevel>
     <AssemblyName>lecter</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>LIBNOTIFYNET</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -54,6 +57,9 @@
     </Reference>
     <Reference Include="codeaddicts.libArgument">
       <HintPath>..\packages\Codeaddicts.libArgument.0.1.5604.7101\lib\net40\codeaddicts.libArgument.dll</HintPath>
+    </Reference>
+    <Reference Include="libnotify.net">
+      <HintPath>..\..\libnotify.net\libnotify.net\bin\Release\libnotify.net.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

@@ -5,6 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 
+#if LIBNOTIFYNET
+using libnotify.net;
+#endif
+
 namespace hashlecter
 {
 	public static class BruteforceAttack
@@ -30,6 +34,10 @@ namespace hashlecter
 		#endregion
 
 		public static void Run (string[] hashes, HashingMethod method, string alphabet, int length = 6) {
+
+			#if LIBNOTIFYNET
+			Notification.Send ("Hashlecter", "Started bruteforce attack.", 5000);
+			#endif
 
 			// Stopwatch for measuring time
 			var watch = Stopwatch.StartNew ();
@@ -78,6 +86,12 @@ namespace hashlecter
 							if (success) {
 								++cracked;
 								MainClass.db.Add (MainClass.session, current_hash, value, method);
+
+								#if LIBNOTIFYNET
+								var _libnotifynet_format = string.Format ("Successfully cracked {0} hash:\n{1}\nValue was: {2}", method.Name, current_hash, output);
+								Notification.Send ("Hashlecter", _libnotifynet_format, 7500, 250, 100);
+								#endif
+
 								done = true;
 								goto end;
 							}
@@ -117,6 +131,12 @@ namespace hashlecter
 						if (success) {
 							++cracked;
 							MainClass.db.Add (MainClass.session, current_hash, value, method);
+
+							#if LIBNOTIFYNET
+							var _libnotifynet_format = string.Format ("Successfully cracked {0} hash:\n{1}\nValue was: {2}", method.Name, current_hash, output);
+							Notification.Send ("Hashlecter", _libnotifynet_format, 7500, 250, 100);
+							#endif
+
 							done = true;
 							goto end;
 						}

@@ -7,6 +7,10 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
+#if LIBNOTIFYNET
+using libnotify.net;
+#endif
+
 namespace hashlecter
 {
 	public static class DictionaryAttack
@@ -44,6 +48,10 @@ namespace hashlecter
 		#endregion
 
 		public static void Run (string[] hashes, HashingMethod method, string dictionary_path) {
+
+			#if LIBNOTIFYNET
+			Notification.Send ("Hashlecter", "Started dictionary attack.", 5000);
+			#endif
 			
 			// Dictionary buffer
 			string[] dict = new string[BUFFER_SZ];
@@ -120,6 +128,11 @@ namespace hashlecter
 
 								// Add the collision to the database
 								MainClass.db.Add (MainClass.session, hash, output, method);
+
+								#if LIBNOTIFYNET
+								var _libnotifynet_format = string.Format ("Successfully cracked {0} hash:\n{1}\nValue was: {2}", method.Name, hash, output);
+								Notification.Send ("Hashlecter", _libnotifynet_format, 7500, 250, 100);
+								#endif
 
 								if (!MainClass.options.exp_single_cont) {
 									
